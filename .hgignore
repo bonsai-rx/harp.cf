@@ -1,0 +1,7 @@
+syntax: glob
+.vs
+*.suo
+bin
+packages
+Bonsai.Harp.CF/bin
+Bonsai.Harp.CF/obj
