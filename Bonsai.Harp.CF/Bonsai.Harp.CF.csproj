@@ -78,8 +78,6 @@
     <Compile Include="CameraCommand.cs" />
     <Compile Include="DeviceEvent.cs" />
     <Compile Include="DeviceCommand.cs" />
-    <Compile Include="FlyPadEvent.cs" />
-    <Compile Include="FlyPadCommand.cs" />
     <Compile Include="MultiPwmEvent.cs" />
     <Compile Include="MultiPwmCommand.cs" />
     <Compile Include="PyControlEvent.cs" />
