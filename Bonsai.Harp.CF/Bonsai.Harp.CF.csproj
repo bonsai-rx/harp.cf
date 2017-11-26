@@ -72,6 +72,8 @@
   <ItemGroup>
     <Compile Include="ArquimedesEvent.cs" />
     <Compile Include="ArquimedesCommand.cs" />
+    <Compile Include="BehaviorCommand.cs" />
+    <Compile Include="BehaviorEvent.cs" />
     <Compile Include="CameraEvent.cs" />
     <Compile Include="CameraCommand.cs" />
     <Compile Include="DeviceEvent.cs" />
@@ -90,7 +92,9 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Bonsai.Harp.CF.nuspec" />
-    <None Include="packages.config" />
+    <None Include="packages.config">
+      <SubType>Designer</SubType>
+    </None>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
