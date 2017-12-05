@@ -10,27 +10,15 @@ using System.ComponentModel;
 
 namespace Bonsai.Harp.CF
 {
-    public enum BehaviorIndexMask : byte
+    [Flags]
+    public enum BehaviorPorts : byte
     {
-        _0 = 0,
-        _0_1,
-        _0_1_2,
-        _0_1_2_3,
-        _0_1_3,
-        _0_2,
-        _0_2_3,
-        _0_3,
-
-        _1,
-        _1_2,
-        _1_2_3,
-        _1_3,
-
-        _2,
-        _2_3,
-
-        _3,
+        Port0 = 0x1,
+        Port1 = 0x2,
+        Port2 = 0x4,
+        Port3 = 0x8
     }
+
     public enum BehaviorCommandType : byte
     {
         SetPokeLed = 0,
@@ -106,7 +94,7 @@ namespace Bonsai.Harp.CF
         public BehaviorCommand()
         {
             Type = BehaviorCommandType.SetPokeLed;
-            Mask = BehaviorIndexMask._0;
+            Mask = BehaviorPorts.Port0;
         }
 
         string INamedElement.Name
@@ -115,7 +103,7 @@ namespace Bonsai.Harp.CF
         }
 
         public BehaviorCommandType Type { get; set; }
-        public BehaviorIndexMask Mask { get; set; }
+        public BehaviorPorts Mask { get; set; }
 
     protected override Expression BuildSelector(Expression expression)
         {
@@ -222,46 +210,27 @@ namespace Bonsai.Harp.CF
 
         Expression GetBitMask()
         {
-            int bitMask = 0;
-            switch (Mask)
-            {
-                case BehaviorIndexMask._0:          bitMask = 0x01; break;
-                case BehaviorIndexMask._0_1:        bitMask = 0x03; break;
-                case BehaviorIndexMask._0_1_2:      bitMask = 0x07; break;
-                case BehaviorIndexMask._0_1_2_3:    bitMask = 0x0F; break;
-                case BehaviorIndexMask._0_1_3:      bitMask = 0x0B; break;
-                case BehaviorIndexMask._0_2_3:      bitMask = 0x0D; break;
-                case BehaviorIndexMask._0_2:        bitMask = 0x05; break;
-                case BehaviorIndexMask._0_3:        bitMask = 0x09; break;
-                case BehaviorIndexMask._1:          bitMask = 0x02; break;
-                case BehaviorIndexMask._1_2:        bitMask = 0x06; break;
-                case BehaviorIndexMask._1_2_3:      bitMask = 0x0E; break;
-                case BehaviorIndexMask._1_3:        bitMask = 0x0A; break;
-                case BehaviorIndexMask._2:          bitMask = 0x04; break;
-                case BehaviorIndexMask._2_3:        bitMask = 0x0C; break;
-                case BehaviorIndexMask._3:          bitMask = 0x08; break;
-            }
-            return Expression.Constant(bitMask);
+            return Expression.Convert(Expression.Constant(Mask), typeof(int));
         }
 
         
-        static void checkPokeLed(int bitMask)           { if (bitMask > 7)  throw new InvalidOperationException("Invalid Mask selection."); }
-        static void checkPokeValve(int bitMask)         { if (bitMask > 7)  throw new InvalidOperationException("Invalid Mask selection."); }
-        static void checkLed(int bitMask)               { if (bitMask > 3)  throw new InvalidOperationException("Invalid Mask selection."); }
-        static void checkRgb(int bitMask)               { if (bitMask > 3)  throw new InvalidOperationException("Invalid Mask selection."); }
-        static void checkDigitalOutput(int bitMask)     { if (bitMask > 15) throw new InvalidOperationException("Invalid Mask selection."); }
-        static void checkPwm(int bitMask)               { if (bitMask > 15) throw new InvalidOperationException("Invalid Mask selection."); }
+        static void checkPokeLed(int bitMask)            { if (bitMask > 7)  throw new InvalidOperationException("Invalid Mask selection."); }
+        static void checkPokeValve(int bitMask)          { if (bitMask > 7)  throw new InvalidOperationException("Invalid Mask selection."); }
+        static void checkLed(int bitMask)                { if (bitMask > 3)  throw new InvalidOperationException("Invalid Mask selection."); }
+        static void checkRgb(int bitMask)                { if (bitMask > 3)  throw new InvalidOperationException("Invalid Mask selection."); }
+        static void checkDigitalOutput(int bitMask)      { if (bitMask > 15) throw new InvalidOperationException("Invalid Mask selection."); }
+        static void checkPwm(int bitMask)                { if (bitMask > 15) throw new InvalidOperationException("Invalid Mask selection."); }
 
-        static void checkPwmFrequency(int bitMask)      { if (bitMask != 1 && bitMask != 2 && bitMask != 4 && bitMask != 8) throw new InvalidOperationException("Invalid Mask selection. Available options are _0, _1, _2 and _3."); }
-        static void checkLedCurrent(int bitMask)        { if (bitMask != 1 && bitMask != 2) throw new InvalidOperationException("Invalid Mask selection. Available options are _0 and _1."); }
+        static void checkPwmFrequency(int bitMask)       { if (bitMask != 1 && bitMask != 2 && bitMask != 4 && bitMask != 8) throw new InvalidOperationException("Invalid Mask selection. Only one port can be set."); }
+        static void checkLedCurrent(int bitMask)         { if (bitMask != 1 && bitMask != 2) throw new InvalidOperationException("Invalid Mask selection. Only Port0 or Port1 can be set."); }
 
-        static void checkPulsePokeLed(int bitMask)      { if (bitMask != 1 && bitMask != 2 && bitMask != 4) throw new InvalidOperationException("Invalid Mask selection. Available options are _0, _1 and _2."); }
-        static void checkPulsePokeValve(int bitMask)    { if (bitMask != 1 && bitMask != 2 && bitMask != 4) throw new InvalidOperationException("Invalid Mask selection. Available options are _0, _1 and _2."); }
-        static void checkPulseLed(int bitMask)          { if (bitMask != 1 && bitMask != 2) throw new InvalidOperationException("Invalid Mask selection. Available options are _0 and _1."); }
-        static void checkPulseRgb(int bitMask)          { if (bitMask != 1 && bitMask != 2) throw new InvalidOperationException("Invalid Mask selection. Available options are _0 and _1."); }
-        static void checkPulseDigitalOutput(int bitMask) { if (bitMask != 1 && bitMask != 2 && bitMask != 4 && bitMask != 8) throw new InvalidOperationException("Invalid Mask selection. Available options are _0, _1, _2 and _3."); }
+        static void checkPulsePokeLed(int bitMask)       { if (bitMask != 1 && bitMask != 2 && bitMask != 4) throw new InvalidOperationException("Invalid Mask selection.  Only Port0, Port1 or Port2 can be set."); }
+        static void checkPulsePokeValve(int bitMask)     { if (bitMask != 1 && bitMask != 2 && bitMask != 4) throw new InvalidOperationException("Invalid Mask selection. Only Port0, Port1 or Port2 can be set."); }
+        static void checkPulseLed(int bitMask)           { if (bitMask != 1 && bitMask != 2) throw new InvalidOperationException("Invalid Mask selection. Only Port0 or Port1 can be set."); }
+        static void checkPulseRgb(int bitMask)           { if (bitMask != 1 && bitMask != 2) throw new InvalidOperationException("Invalid Mask selection. Only Port0 or Port1 can be set."); }
+        static void checkPulseDigitalOutput(int bitMask) { if (bitMask != 1 && bitMask != 2 && bitMask != 4 && bitMask != 8) throw new InvalidOperationException("Invalid Mask selection. Only one port can be set."); }
 
-        static void checkColorRgb(int bitMask)          { if (bitMask != 1 && bitMask != 2) throw new InvalidOperationException("Invalid Mask selection. Available options are _0 and _1."); }
+        static void checkColorRgb(int bitMask) { if (bitMask != 1 && bitMask != 2) throw new InvalidOperationException("Invalid Mask selection. Only Port0 or Port1 can be set."); }
 
 
         static HarpDataFrame createFrameU8(byte registerAddress, int content)
