@@ -83,7 +83,7 @@ namespace Bonsai.Harp.CF
 
         string INamedElement.Name
         {
-            get { return typeof(ArquimedesCommand).Name + "." + Type.ToString(); }
+            get { return typeof(ArquimedesCommand).Name.Replace("Command", string.Empty) + "." + Type.ToString(); }
         }
 
         public ArquimedesCommandType Type { get; set; }

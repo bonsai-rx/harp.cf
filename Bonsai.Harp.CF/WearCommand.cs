@@ -44,7 +44,7 @@ namespace Bonsai.Harp.CF
 
         string INamedElement.Name
         {
-            get { return typeof(WearCommand).Name + "." + Type.ToString(); }
+            get { return typeof(WearCommand).Name.Replace("Command", string.Empty) + "." + Type.ToString(); }
         }
 
         public WearCommandType Type { get; set; }

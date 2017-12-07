@@ -67,7 +67,7 @@ namespace Bonsai.Harp.CF
 
         string INamedElement.Name
         {
-            get { return typeof(DeviceEvent).Name + "." + Type.ToString(); }
+            get { return typeof(DeviceEvent).Name.Replace("Event", string.Empty) + "." + Type.ToString(); }
         }
 
         public DeviceEventType Type { get; set; }

@@ -52,7 +52,7 @@ namespace Bonsai.Harp.CF
 
         string INamedElement.Name
         {
-            get { return typeof(BehaviorEvent).Name + "." + Type.ToString(); }
+            get { return typeof(BehaviorEvent).Name.Replace("Event", string.Empty) + "." + Type.ToString(); }
         }
 
         public BehaviorEventType Type { get; set; }

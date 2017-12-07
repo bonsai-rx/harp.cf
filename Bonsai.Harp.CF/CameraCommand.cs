@@ -70,7 +70,7 @@ namespace Bonsai.Harp.CF
 
         string INamedElement.Name
         {
-            get { return typeof(CameraCommand).Name + "." + Type.ToString(); }
+            get { return typeof(CameraCommand).Name.Replace("Command", string.Empty) + "." + Type.ToString(); }
         }
 
         public CameraCommandType Type { get; set; }

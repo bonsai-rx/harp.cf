@@ -100,7 +100,7 @@ namespace Bonsai.Harp.CF
 
         string INamedElement.Name
         {
-            get { return typeof(PyControlEvent).Name + "." + Type.ToString(); }
+            get { return typeof(PyControlEvent).Name.Replace("Event", string.Empty) + "." + Type.ToString(); }
         }
 
         public PyControlEventType Type { get; set; }

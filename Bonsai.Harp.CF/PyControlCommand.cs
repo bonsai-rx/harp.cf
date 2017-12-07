@@ -30,7 +30,7 @@ namespace Bonsai.Harp.CF
 
         string INamedElement.Name
         {
-            get { return typeof(PyControlCommand).Name + "." + Type.ToString(); }
+            get { return typeof(PyControlCommand).Name.Replace("Command", string.Empty) + "." + Type.ToString(); }
         }
 
         public PyControlCommandType Type { get; set; }

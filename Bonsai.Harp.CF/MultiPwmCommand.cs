@@ -54,7 +54,7 @@ namespace Bonsai.Harp.CF
 
         string INamedElement.Name
         {
-            get { return typeof(MultiPwmCommand).Name + "." + Type.ToString(); }
+            get { return typeof(MultiPwmCommand).Name.Replace("Command", string.Empty) + "." + Type.ToString(); }
         }
 
         public MultiPwmCommandType Type { get; set; }

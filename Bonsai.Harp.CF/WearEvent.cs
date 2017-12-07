@@ -97,7 +97,7 @@ namespace Bonsai.Harp.CF
 
         string INamedElement.Name
         {
-            get { return typeof(WearEvent).Name + "." + Type.ToString(); }
+            get { return typeof(WearEvent).Name.Replace("Event", string.Empty) + "." + Type.ToString(); }
         }
 
         public WearEventType Type { get; set; }

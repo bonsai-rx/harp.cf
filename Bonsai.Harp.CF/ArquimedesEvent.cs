@@ -77,7 +77,7 @@ namespace Bonsai.Harp.CF
 
         string INamedElement.Name
         {
-            get { return typeof(ArquimedesEvent).Name + "." + Type.ToString(); }
+            get { return typeof(ArquimedesEvent).Name.Replace("Event", string.Empty) + "." + Type.ToString(); }
         }
 
         public ArquimedesEventType Type { get; set; }
