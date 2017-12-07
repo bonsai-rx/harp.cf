@@ -44,7 +44,7 @@ namespace Bonsai.Harp.CF
 
         string INamedElement.Name
         {
-            get { return typeof(CameraEvent).Name + "." + Type.ToString(); }
+            get { return typeof(CameraEvent).Name.Replace("Event", string.Empty) + "." + Type.ToString(); }
         }
 
         public CameraEventType Type { get; set; }

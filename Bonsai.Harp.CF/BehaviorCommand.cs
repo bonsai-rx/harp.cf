@@ -99,7 +99,7 @@ namespace Bonsai.Harp.CF
 
         string INamedElement.Name
         {
-            get { return typeof(BehaviorCommand).Name + "." + Type.ToString(); }
+            get { return typeof(BehaviorCommand).Name.Replace("Command", string.Empty) + "." + Type.ToString(); }
         }
 
         public BehaviorCommandType Type { get; set; }

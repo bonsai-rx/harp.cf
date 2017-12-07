@@ -49,7 +49,7 @@ namespace Bonsai.Harp.CF
 
         string INamedElement.Name
         {
-            get { return typeof(DeviceCommand).Name + "." + Type.ToString(); }
+            get { return typeof(DeviceCommand).Name.Replace("Command", string.Empty) + "." + Type.ToString(); }
         }
 
         public DeviceCommandType Type { get; set; }

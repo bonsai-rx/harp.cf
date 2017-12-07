@@ -29,7 +29,7 @@ namespace Bonsai.Harp.CF
 
         string INamedElement.Name
         {
-            get { return typeof(SynchronizerCommand).Name + "." + Type.ToString(); }
+            get { return typeof(SynchronizerCommand).Name.Replace("Command", string.Empty) + "." + Type.ToString(); }
         }
 
         public SynchronizerCommandType Type { get; set; }

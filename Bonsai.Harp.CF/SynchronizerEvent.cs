@@ -56,7 +56,7 @@ namespace Bonsai.Harp.CF
 
         string INamedElement.Name
         {
-            get { return typeof(SynchronizerEvent).Name + "." + Type.ToString(); }
+            get { return typeof(SynchronizerEvent).Name.Replace("Event", string.Empty) + "." + Type.ToString(); }
         }
 
         public SynchronizerEventType Type { get; set; }
