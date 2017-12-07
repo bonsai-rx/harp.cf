@@ -11,90 +11,78 @@ using System.ComponentModel;
 namespace Bonsai.Harp.CF
 {
     [Flags]
-    public enum BehaviorPorts : byte
+    public enum BehaviorPorts : UInt16
     {
-        Port0 = 0x1,
-        Port1 = 0x2,
-        Port2 = 0x4,
-        Port3 = 0x8
+        PokeLed0 = 1,
+        PokeLed1 = 2,
+        PokeLed2 = 4,
+        PokeValve0 = 8,
+        PokeValve1 = 16,
+        PokeValve2 = 32,
+        Led0 = 64,
+        Led1 = 128,
+        Rgb0 = 256,
+        Rgb1 = 512,
+        Digital0 = 1024,
+        Digital1 = 2048,
+        Digital2 = 4096,
+        Digital3 = 8192
     }
 
     public enum BehaviorCommandType : byte
     {
-        SetPokeLed = 0,
-        SetPokeValve,
-        SetLed,
-        SetRgb,
-        SetDigitalOutput,
-
-        ClearPokeLed,
-        ClearPokeValve,
-        ClearLed,
-        ClearRgb,
-        ClearDigitalOutput,
-
-        OutputsSet,
-        OuputsClear,
-        OuputsToggle,
-        Outputs,
+        SetOutput,
+        ClearOutput,
+        ToggleOutput,
 
         StartPwm,
         StopPwm,
-        PwmFrequency,
+        WritePwmFrequency,
 
-        LedCurrent,
+        WriteLedCurrent,
 
-        PulsePokeLed,
-        PulsePokeValve,
-        PulseLed,
-        PulseRgb,
-        PulseDigitalOutput,
+        WritePulsePeriod,
 
-        ColorsRgb,
-        ColorsRgbs
+        WriteColorsRgb,
+        WriteColorsRgbs,
+
+        RegisterSetOutputs,
+        RegisterClearOutputs,
+        RegisterToggleOutputs,
+        RegisterStartPwm,
+        RegisterStopPwm
     }
 
     [Description(
         "\n" +
-        "SetPokeLed: Any\n" +
-        "SetPokeValve: Any\n" +
-        "SetLed: Any\n" +
-        "SetRgb: Any\n" +
-        "SetDigitalOutput: Any\n" +
-        "\n" +
-        "ClearPokeLed: Any\n" +
-        "ClearPokeValve: Any\n" +
-        "ClearLed: Any\n" +
-        "ClearRgb: Any\n" +
-        "ClearDigitalOutput: Any\n" +
-        "\n" +
-        "OutputsSet: Bitmask\n" +
-        "OuputsClear: Bitmask\n" +
-        "OuputsToggle: Bitmask\n" +
-        "Outputs: Bitmask\n" +
+        "SetOutput: Any\n" +
+        "ClearOutput: Any\n" +
+        "ToggleOutput: Any\n" +
         "\n" +
         "StartPwm: Any\n" +
         "StopPwm: Any\n" +
-        "PwmFrequency: Integer\n" +
+        "WritePwmFrequency: Integer\n" +
         "\n" +
-        "LedCurrent: Integer\n" +
+        "WriteLedCurrent: Integer\n" +
         "\n" +
-        "PulsePokeLed: Integer\n" +
-        "PulsePokeValve: Integer\n" +
-        "PulseLed: Integer\n" +
-        "PulseRgb: Integer\n" +
-        "PulseDigitalOutput: Integer\n" +
+        "WritePulsePeriod: Integer\n" +
         "\n" +
-        "ColorsRgb: Positive integer array[3] (G,R,B)\n" +
-        "ColorsRgb: Positive integer array[6] (G,R,B,G,R,B)\n"
+        "WriteColorsRgb: Positive integer array[3] (G,R,B)\n" +
+        "WriteColorsRgbs: Positive integer array[6] (G,R,B,G,R,B)\n" +
+        "\n" +
+        "RegisterSetOutputs: Bitmask U16\n" +
+        "RegisterClearOutputs: Bitmask U16\n" +
+        "RegisterToggleOutputs: Bitmask U16\n" +
+        "RegisterStartPwm: Bitmask U8\n" +
+        "RegisterStopPwm: Bitmask U8\n"
     )]
 
     public class BehaviorCommand : SelectBuilder, INamedElement
     {
         public BehaviorCommand()
         {
-            Type = BehaviorCommandType.SetPokeLed;
-            Mask = BehaviorPorts.Port0;
+            Type = BehaviorCommandType.SetOutput;
+            Mask = BehaviorPorts.PokeLed0;
         }
 
         string INamedElement.Name
@@ -110,127 +98,99 @@ namespace Bonsai.Harp.CF
             switch (Type)
             {
                 /************************************************************************/
-                /* Set                                                                  */
-                /************************************************************************/
-                case BehaviorCommandType.SetPokeLed:
-                    return Expression.Call(typeof(BehaviorCommand), "ProcessSetPokeLed", new[] { expression.Type }, expression, GetBitMask());
-                case BehaviorCommandType.SetPokeValve:
-                    return Expression.Call(typeof(BehaviorCommand), "ProcessSetPokeValve", new[] { expression.Type }, expression, GetBitMask());
-                case BehaviorCommandType.SetLed:
-                    return Expression.Call(typeof(BehaviorCommand), "ProcessSetLed", new[] { expression.Type }, expression, GetBitMask());
-                case BehaviorCommandType.SetRgb:
-                    return Expression.Call(typeof(BehaviorCommand), "ProcessSetRgb", new[] { expression.Type }, expression, GetBitMask());
-                case BehaviorCommandType.SetDigitalOutput:
-                    return Expression.Call(typeof(BehaviorCommand), "ProcessSetDigitalOutput", new[] { expression.Type }, expression, GetBitMask());
-
-                /************************************************************************/
-                /* Clear                                                                */
-                /************************************************************************/
-                case BehaviorCommandType.ClearPokeLed:
-                    return Expression.Call(typeof(BehaviorCommand), "ProcessClearPokeLed", new[] { expression.Type }, expression, GetBitMask());
-                case BehaviorCommandType.ClearPokeValve:
-                    return Expression.Call(typeof(BehaviorCommand), "ProcessClearPokeValve", new[] { expression.Type }, expression, GetBitMask());
-                case BehaviorCommandType.ClearLed:
-                    return Expression.Call(typeof(BehaviorCommand), "ProcessClearLed", new[] { expression.Type }, expression, GetBitMask());
-                case BehaviorCommandType.ClearRgb:
-                    return Expression.Call(typeof(BehaviorCommand), "ProcessClearRgb", new[] { expression.Type }, expression, GetBitMask());
-                case BehaviorCommandType.ClearDigitalOutput:
-                    return Expression.Call(typeof(BehaviorCommand), "ProcessClearDigitalOutput", new[] { expression.Type }, expression, GetBitMask());
-
-                /************************************************************************/
                 /* Outputs                                                              */
                 /************************************************************************/
-                case BehaviorCommandType.OutputsSet:
+                case BehaviorCommandType.SetOutput:
+                    return Expression.Call(typeof(BehaviorCommand), "ProcessSetOutput", new[] { expression.Type }, expression, GetBitMask());
+                case BehaviorCommandType.ClearOutput:
+                    return Expression.Call(typeof(BehaviorCommand), "ProcessClearOutput", new[] { expression.Type }, expression, GetBitMask());
+                case BehaviorCommandType.ToggleOutput:
+                    return Expression.Call(typeof(BehaviorCommand), "ProcessToggleOutput", new[] { expression.Type }, expression, GetBitMask());
+
+                case BehaviorCommandType.RegisterSetOutputs:
                     if (expression.Type != typeof(UInt16)) { expression = Expression.Convert(expression, typeof(UInt16)); }
-                    return Expression.Call(typeof(BehaviorCommand), "ProcessOutputsSet", null, expression);
-                case BehaviorCommandType.OuputsClear:
+                    return Expression.Call(typeof(BehaviorCommand), "ProcessRegisterSetOutputs", null, expression);
+                case BehaviorCommandType.RegisterClearOutputs:
                     if (expression.Type != typeof(UInt16)) { expression = Expression.Convert(expression, typeof(UInt16)); }
-                    return Expression.Call(typeof(BehaviorCommand), "ProcessOuputsClear", null, expression);
-                case BehaviorCommandType.OuputsToggle:
+                    return Expression.Call(typeof(BehaviorCommand), "ProcessRegisterClearOutputs", null, expression);
+                case BehaviorCommandType.RegisterToggleOutputs:
                     if (expression.Type != typeof(UInt16)) { expression = Expression.Convert(expression, typeof(UInt16)); }
-                    return Expression.Call(typeof(BehaviorCommand), "ProcessOuputsToggle", null, expression);
-                case BehaviorCommandType.Outputs:
-                    if (expression.Type != typeof(UInt16)) { expression = Expression.Convert(expression, typeof(UInt16)); }
-                    return Expression.Call(typeof(BehaviorCommand), "ProcessOutputs", null, expression);                    
+                    return Expression.Call(typeof(BehaviorCommand), "ProcessRegisterToggleOutputs", null, expression);
 
                 /************************************************************************/
-                /* PWM                                                                  */
+                /* Pwm                                                                  */
                 /************************************************************************/
                 case BehaviorCommandType.StartPwm:
-                    return Expression.Call(typeof(BehaviorCommand), "ProcessStartPwm", new[] { expression.Type }, expression, GetBitMask());
+                    return Expression.Call(typeof(BehaviorCommand), "ProcessClearPokeLed", new[] { expression.Type }, expression, GetBitMask());
                 case BehaviorCommandType.StopPwm:
-                    return Expression.Call(typeof(BehaviorCommand), "ProcessStopPwm", new[] { expression.Type }, expression, GetBitMask());
-
-                case BehaviorCommandType.PwmFrequency:
+                    return Expression.Call(typeof(BehaviorCommand), "ProcessClearPokeValve", new[] { expression.Type }, expression, GetBitMask());
+                case BehaviorCommandType.WritePwmFrequency:
                     if (expression.Type != typeof(UInt16)) { expression = Expression.Convert(expression, typeof(UInt16)); }
-                    return Expression.Call(typeof(BehaviorCommand), "ProcessPwmFrequency", null, expression, GetBitMask());
-                
-                /************************************************************************/
-                /* LED Current                                                          */
-                /************************************************************************/
-                case BehaviorCommandType.LedCurrent:
+                    return Expression.Call(typeof(BehaviorCommand), "ProcessWritePwmFrequency", null, expression, GetBitMask());
+
+                case BehaviorCommandType.RegisterStartPwm:
                     if (expression.Type != typeof(byte)) { expression = Expression.Convert(expression, typeof(byte)); }
-                    return Expression.Call(typeof(BehaviorCommand), "ProcessLedCurrent", null, expression, GetBitMask());
+                    return Expression.Call(typeof(BehaviorCommand), "ProcessRegisterStartPwm", null, expression);
+                case BehaviorCommandType.RegisterStopPwm:
+                    if (expression.Type != typeof(byte)) { expression = Expression.Convert(expression, typeof(byte)); }
+                    return Expression.Call(typeof(BehaviorCommand), "ProcessRegisterStopPwm", null, expression);
 
                 /************************************************************************/
-                /* Pulses                                                               */
+                /* Led                                                                  */
                 /************************************************************************/
-                case BehaviorCommandType.PulsePokeLed:
+                case BehaviorCommandType.WriteLedCurrent:
+                    if (expression.Type != typeof(byte)) { expression = Expression.Convert(expression, typeof(byte)); }
+                    return Expression.Call(typeof(BehaviorCommand), "ProcessWriteLedCurrent", null, expression, GetBitMask());
+
+               /************************************************************************/
+                /* Pulse Period                                                         */
+                /************************************************************************/
+                case BehaviorCommandType.WritePulsePeriod:
                     if (expression.Type != typeof(UInt16)) { expression = Expression.Convert(expression, typeof(UInt16)); }
-                    return Expression.Call(typeof(BehaviorCommand), "ProcessPulsePokeLed", null, expression, GetBitMask());
-                case BehaviorCommandType.PulsePokeValve:
-                    if (expression.Type != typeof(UInt16)) { expression = Expression.Convert(expression, typeof(UInt16)); }
-                    return Expression.Call(typeof(BehaviorCommand), "ProcessPulsePokeValve", null, expression, GetBitMask());
-                case BehaviorCommandType.PulseLed:
-                    if (expression.Type != typeof(UInt16)) { expression = Expression.Convert(expression, typeof(UInt16)); }
-                    return Expression.Call(typeof(BehaviorCommand), "ProcessPulseLed", null, expression, GetBitMask());
-                case BehaviorCommandType.PulseRgb:
-                    if (expression.Type != typeof(UInt16)) { expression = Expression.Convert(expression, typeof(UInt16)); }
-                    return Expression.Call(typeof(BehaviorCommand), "ProcessPulseRgb", null, expression, GetBitMask());
-                case BehaviorCommandType.PulseDigitalOutput:
-                    if (expression.Type != typeof(UInt16)) { expression = Expression.Convert(expression, typeof(UInt16)); }
-                    return Expression.Call(typeof(BehaviorCommand), "ProcessPulseDigitalOutput", null, expression, GetBitMask());
-                    
+                    return Expression.Call(typeof(BehaviorCommand), "ProcessWritePulsePeriod", null, expression, GetBitMask());
+
                 /************************************************************************/
                 /* RGBs                                                                 */
                 /************************************************************************/
-                case BehaviorCommandType.ColorsRgb:
+                case BehaviorCommandType.WriteColorsRgb:
                     if (expression.Type != typeof(byte[])) { expression = Expression.Convert(expression, typeof(byte[])); }
-                    return Expression.Call(typeof(BehaviorCommand), "ProcessColorsRgb", null, expression, GetBitMask());
-                case BehaviorCommandType.ColorsRgbs:
+                    return Expression.Call(typeof(BehaviorCommand), "ProcessWriteColorsRgb", null, expression, GetBitMask());
+
+                case BehaviorCommandType.WriteColorsRgbs:
                     if (expression.Type != typeof(byte[])) { expression = Expression.Convert(expression, typeof(byte[])); }
-                    return Expression.Call(typeof(BehaviorCommand), "ProcessColorRgbs", null, expression);
+                    return Expression.Call(typeof(BehaviorCommand), "ProcessWriteColorsRgbs", null, expression);
 
                 default:
                     break;
             }
             return expression;
         }
-
-
+        
+        /************************************************************************/
+        /* Local functions                                                      */
+        /************************************************************************/
         Expression GetBitMask()
         {
             return Expression.Convert(Expression.Constant(Mask), typeof(int));
         }
 
-        
-        static void checkPokeLed(int bitMask)            { if (bitMask > 7)  throw new InvalidOperationException("Invalid Mask selection."); }
-        static void checkPokeValve(int bitMask)          { if (bitMask > 7)  throw new InvalidOperationException("Invalid Mask selection."); }
-        static void checkLed(int bitMask)                { if (bitMask > 3)  throw new InvalidOperationException("Invalid Mask selection."); }
-        static void checkRgb(int bitMask)                { if (bitMask > 3)  throw new InvalidOperationException("Invalid Mask selection."); }
-        static void checkDigitalOutput(int bitMask)      { if (bitMask > 15) throw new InvalidOperationException("Invalid Mask selection."); }
-        static void checkPwm(int bitMask)                { if (bitMask > 15) throw new InvalidOperationException("Invalid Mask selection."); }
+        static void checkOuputsMask(int bitMask)
+        {
+            if (bitMask < 1024 || bitMask > 15360)
+                throw new InvalidOperationException("Invalid Mask selection. Only Digital0, Digital1, Digital2 and/or Digital3 can be selected");
+        }
 
-        static void checkPwmFrequency(int bitMask)       { if (bitMask != 1 && bitMask != 2 && bitMask != 4 && bitMask != 8) throw new InvalidOperationException("Invalid Mask selection. Only one port can be set."); }
-        static void checkLedCurrent(int bitMask)         { if (bitMask != 1 && bitMask != 2) throw new InvalidOperationException("Invalid Mask selection. Only Port0 or Port1 can be set."); }
+        static void checkLedsMask(int bitMask)
+        {
+            if (bitMask < 64 || bitMask > 192)
+                throw new InvalidOperationException("Invalid Mask selection. Only Led0 and/or Led1 can be selected");
+        }
 
-        static void checkPulsePokeLed(int bitMask)       { if (bitMask != 1 && bitMask != 2 && bitMask != 4) throw new InvalidOperationException("Invalid Mask selection.  Only Port0, Port1 or Port2 can be set."); }
-        static void checkPulsePokeValve(int bitMask)     { if (bitMask != 1 && bitMask != 2 && bitMask != 4) throw new InvalidOperationException("Invalid Mask selection. Only Port0, Port1 or Port2 can be set."); }
-        static void checkPulseLed(int bitMask)           { if (bitMask != 1 && bitMask != 2) throw new InvalidOperationException("Invalid Mask selection. Only Port0 or Port1 can be set."); }
-        static void checkPulseRgb(int bitMask)           { if (bitMask != 1 && bitMask != 2) throw new InvalidOperationException("Invalid Mask selection. Only Port0 or Port1 can be set."); }
-        static void checkPulseDigitalOutput(int bitMask) { if (bitMask != 1 && bitMask != 2 && bitMask != 4 && bitMask != 8) throw new InvalidOperationException("Invalid Mask selection. Only one port can be set."); }
-
-        static void checkColorRgb(int bitMask) { if (bitMask != 1 && bitMask != 2) throw new InvalidOperationException("Invalid Mask selection. Only Port0 or Port1 can be set."); }
+        static void checkRgbsMask(int bitMask)
+        {
+            if (bitMask < 256 || bitMask > 768)
+                throw new InvalidOperationException("Invalid Mask selection. Only Rgb0 and/or Rgb1 can be selected");
+        }
 
 
         static HarpDataFrame createFrameU8(byte registerAddress, int content)
@@ -244,137 +204,92 @@ namespace Bonsai.Harp.CF
 
 
         /************************************************************************/
-        /* Set                                                                  */
-        /************************************************************************/
-        static HarpDataFrame ProcessSetPokeLed<TSource>(TSource input, int bMask)           { checkPokeLed(bMask); bMask = bMask << 0;          return createFrameU16(34, bMask); }
-        static HarpDataFrame ProcessSetPokeValve<TSource>(TSource input, int bMask)         { checkPokeValve(bMask); bMask = bMask << 3;        return createFrameU16(34, bMask); }
-        static HarpDataFrame ProcessSetLed<TSource>(TSource input, int bMask)               { checkLed(bMask); bMask = bMask << 6;              return createFrameU16(34, bMask); }
-        static HarpDataFrame ProcessSetRgb<TSource>(TSource input, int bMask)               { checkRgb(bMask); bMask = bMask << 8;              return createFrameU16(34, bMask); }
-        static HarpDataFrame ProcessSetDigitalOutput<TSource>(TSource input, int bMask)     { checkDigitalOutput(bMask); bMask = bMask << 10;   return createFrameU16(34, bMask); }
-
-        /************************************************************************/
-        /* Clear                                                                */
-        /************************************************************************/
-        static HarpDataFrame ProcessClearPokeLed<TSource>(TSource input, int bMask)         { checkPokeLed(bMask); bMask = bMask << 0;          return createFrameU16(35, bMask); }
-        static HarpDataFrame ProcessClearPokeValve<TSource>(TSource input, int bMask)       { checkPokeValve(bMask); bMask = bMask << 3;        return createFrameU16(35, bMask); }
-        static HarpDataFrame ProcessClearLed<TSource>(TSource input, int bMask)             { checkLed(bMask); bMask = bMask << 6;              return createFrameU16(35, bMask); }
-        static HarpDataFrame ProcessClearRgb<TSource>(TSource input, int bMask)             { checkRgb(bMask); bMask = bMask << 8;              return createFrameU16(35, bMask); }
-        static HarpDataFrame ProcessClearDigitalOutput<TSource>(TSource input, int bMask)   { checkDigitalOutput(bMask); bMask = bMask << 10;   return createFrameU16(35, bMask); }
-
-        /************************************************************************/
         /* Outputs                                                              */
         /************************************************************************/
-        static HarpDataFrame ProcessOutputsSet(UInt16 input)    { return createFrameU16(34, input); }
-        static HarpDataFrame ProcessOuputsClear(UInt16 input)   { return createFrameU16(35, input); }
-        static HarpDataFrame ProcessOuputsToggle(UInt16 input)  { return createFrameU16(36, input); }
-        static HarpDataFrame ProcessOutputs(UInt16 input)       { return createFrameU16(37, input); }
+        static HarpDataFrame ProcessSetOutput<TSource>(TSource input, int bMask)            { return createFrameU16(34, bMask); }
+        static HarpDataFrame ProcessClearOutput<TSource>(TSource input, int bMask)          { return createFrameU16(35, bMask); }
+        static HarpDataFrame ProcessToggleOutput<TSource>(TSource input, int bMask)         { return createFrameU16(36, bMask); }
+
+        static HarpDataFrame ProcessRegisterSetOutputs(UInt16 input)                        { return createFrameU16(34, input); }
+        static HarpDataFrame ProcessRegisterClearOutputs(UInt16 input)                      { return createFrameU16(35, input); }
+        static HarpDataFrame ProcessRegisterToggleOutputs(UInt16 input)                     { return createFrameU16(36, input); }
 
         /************************************************************************/
-        /* PWM                                                                  */
+        /* Pwm                                                                  */
         /************************************************************************/
-        static HarpDataFrame ProcessStartPwm<TSource>(TSource input, int bMask)             { checkPwm(bMask); bMask = bMask << 0;              return createFrameU8(81, bMask); }
-        static HarpDataFrame ProcessStopPwm<TSource>(TSource input, int bMask)              { checkPwm(bMask); bMask = bMask << 0;              return createFrameU8(82, bMask); }
+        static HarpDataFrame ProcessStartPwm<TSource>(TSource input, int bMask)             { checkOuputsMask(bMask); return createFrameU8(81, bMask); }
+        static HarpDataFrame ProcessStopPwm<TSource>(TSource input, int bMask)              { checkOuputsMask(bMask); return createFrameU8(82, bMask); }
 
-        static HarpDataFrame ProcessPwmFrequency(UInt16 input, int bMask)
+        static IEnumerable<HarpDataFrame> ProcessWritePwmFrequency(UInt16 input, int bMask)
         {
-            checkPwmFrequency(bMask);
-            switch (bMask)
-            {
-                default:
-                case 1: return createFrameU16(73, input);
-                case 2: return createFrameU16(74, input);
-                case 4: return createFrameU16(75, input);
-                case 8: return createFrameU16(76, input);
-            }            
+            checkOuputsMask(bMask);
+
+            if ((bMask & (UInt16)BehaviorPorts.Digital0) == (UInt16)BehaviorPorts.Digital0) yield return createFrameU16(73, input);
+            if ((bMask & (UInt16)BehaviorPorts.Digital1) == (UInt16)BehaviorPorts.Digital1) yield return createFrameU16(74, input);
+            if ((bMask & (UInt16)BehaviorPorts.Digital2) == (UInt16)BehaviorPorts.Digital2) yield return createFrameU16(75, input);
+            if ((bMask & (UInt16)BehaviorPorts.Digital3) == (UInt16)BehaviorPorts.Digital3) yield return createFrameU16(76, input);
         }
 
-        /************************************************************************/
-        /* LED Current                                                          */
-        /************************************************************************/
-        static HarpDataFrame ProcessLedCurrent(byte input, int bMask)
-        {
-            checkLedCurrent(bMask);
-            switch (bMask)
-            {
-                default:
-                case 1: return createFrameU8(86, input);
-                case 2: return createFrameU8(87, input);
-            }
-        }
+        //source.SelectMany(input => ProcessPwmFrequency(input, mask));
+
+        static HarpDataFrame ProcessRegisterStartPwm(byte input)                          { return createFrameU16(81, input); }
+        static HarpDataFrame ProcessRegisterStopPwm(byte input)                           { return createFrameU16(82, input); }
 
         /************************************************************************/
-        /* Pulses                                                               */
+        /* Led                                                                  */
         /************************************************************************/
-        static HarpDataFrame ProcessPulsePokeLed(UInt16 input, int bMask)
+        static IEnumerable<HarpDataFrame> ProcessWriteLedCurrent(UInt16 input, int bMask)
         {
-            checkPulsePokeLed(bMask);
-            switch (bMask)
-            {
-                default:
-                case 1: return createFrameU16(59, input);
-                case 2: return createFrameU16(60, input);
-                case 4: return createFrameU16(61, input);
-            }
-        }
-        static HarpDataFrame ProcessPulsePokeValve(UInt16 input, int bMask)
-        {
-            checkPulsePokeValve(bMask);
-            switch (bMask)
-            {
-                default:
-                case 1: return createFrameU16(62, input);
-                case 2: return createFrameU16(63, input);
-                case 4: return createFrameU16(64, input);
-            }
-        }
-        static HarpDataFrame ProcessPulseLed(UInt16 input, int bMask)
-        {
-            checkPulseLed(bMask);
-            switch (bMask)
-            {
-                default:
-                case 1: return createFrameU16(65, input);
-                case 2: return createFrameU16(66, input);
-            }
-        }
-        static HarpDataFrame ProcessPulseRgb(UInt16 input, int bMask)
-        {
-            checkPulseRgb(bMask);
-            switch (bMask)
-            {
-                default:
-                case 1: return createFrameU16(67, input);
-                case 2: return createFrameU16(68, input);
-            }
-        }
-        static HarpDataFrame ProcessPulseDigitalOutput(UInt16 input, int bMask)
-        {
-            checkPulseDigitalOutput(bMask);
-            switch (bMask)
-            {
-                default:
-                case 1: return createFrameU16(69, input);
-                case 2: return createFrameU16(70, input);
-                case 4: return createFrameU16(71, input);
-                case 8: return createFrameU16(72, input);
-            }
+            checkLedsMask(bMask);
+
+            if ((bMask & (UInt16)BehaviorPorts.Led0) == (UInt16)BehaviorPorts.Led0) yield return createFrameU8(86, input);
+            if ((bMask & (UInt16)BehaviorPorts.Led1) == (UInt16)BehaviorPorts.Led1) yield return createFrameU8(87, input);
         }
 
+        //source.SelectMany(input => ProcessWriteLedCurrent(input, mask));
+
         /************************************************************************/
-        /* Register: LEDS                                                       */
+        /* Pulse Period                                                         */
         /************************************************************************/
-        static HarpDataFrame ProcessColorRgb(byte[] RGBs, int bMask)
+        static IEnumerable<HarpDataFrame> ProcessWritePulsePeriod(UInt16 input, int bMask)
         {
-            checkColorRgb(bMask);
-            switch (bMask)
-            {
-                default:
-                case 1: return HarpDataFrame.UpdateChesksum(new HarpDataFrame(2, 7, 84, 255, (byte)HarpType.U8, RGBs[0], RGBs[1], RGBs[2], 0));
-                case 2: return HarpDataFrame.UpdateChesksum(new HarpDataFrame(2, 7, 85, 255, (byte)HarpType.U8, RGBs[0], RGBs[1], RGBs[2], 0));
-            }
+            checkOuputsMask(bMask);
+
+            if ((bMask & (UInt16)BehaviorPorts.PokeLed0) == (UInt16)BehaviorPorts.PokeLed0) yield return createFrameU16(59, input);
+            if ((bMask & (UInt16)BehaviorPorts.PokeLed1) == (UInt16)BehaviorPorts.PokeLed1) yield return createFrameU16(60, input);
+            if ((bMask & (UInt16)BehaviorPorts.PokeLed2) == (UInt16)BehaviorPorts.PokeLed2) yield return createFrameU16(61, input);
+            if ((bMask & (UInt16)BehaviorPorts.PokeValve0) == (UInt16)BehaviorPorts.PokeValve0) yield return createFrameU16(62, input);
+            if ((bMask & (UInt16)BehaviorPorts.PokeValve1) == (UInt16)BehaviorPorts.PokeValve1) yield return createFrameU16(63, input);
+            if ((bMask & (UInt16)BehaviorPorts.PokeValve2) == (UInt16)BehaviorPorts.PokeValve2) yield return createFrameU16(64, input);
+            if ((bMask & (UInt16)BehaviorPorts.Led0) == (UInt16)BehaviorPorts.Led0) yield return createFrameU16(65, input);
+            if ((bMask & (UInt16)BehaviorPorts.Led1) == (UInt16)BehaviorPorts.Led1) yield return createFrameU16(66, input);
+            if ((bMask & (UInt16)BehaviorPorts.Rgb0) == (UInt16)BehaviorPorts.Rgb0) yield return createFrameU16(67, input);
+            if ((bMask & (UInt16)BehaviorPorts.Rgb1) == (UInt16)BehaviorPorts.Rgb1) yield return createFrameU16(68, input);
+            if ((bMask & (UInt16)BehaviorPorts.Digital0) == (UInt16)BehaviorPorts.Digital0) yield return createFrameU16(69, input);
+            if ((bMask & (UInt16)BehaviorPorts.Digital1) == (UInt16)BehaviorPorts.Digital1) yield return createFrameU16(70, input);
+            if ((bMask & (UInt16)BehaviorPorts.Digital2) == (UInt16)BehaviorPorts.Digital2) yield return createFrameU16(71, input);
+            if ((bMask & (UInt16)BehaviorPorts.Digital3) == (UInt16)BehaviorPorts.Digital3) yield return createFrameU16(71, input);
         }
 
-        static HarpDataFrame ProcessColorRgbs(byte [] RGBs)
+        //source.SelectMany(input => ProcessWritePulsePeriod(input, mask));
+
+        /************************************************************************/
+        /* RGbs                                                                 */
+        /************************************************************************/
+        static IEnumerable<HarpDataFrame> ProcessWriteColorsRgb(byte[] RGBs, int bMask)
+        {
+            checkRgbsMask(bMask);
+
+            if ((bMask & (UInt16)BehaviorPorts.Rgb0) == (UInt16)BehaviorPorts.Rgb0)
+                yield return HarpDataFrame.UpdateChesksum(new HarpDataFrame(2, 7, 84, 255, (byte)HarpType.U8, RGBs[0], RGBs[1], RGBs[2], 0));
+
+            if ((bMask & (UInt16)BehaviorPorts.Rgb1) == (UInt16)BehaviorPorts.Rgb1)
+                yield return HarpDataFrame.UpdateChesksum(new HarpDataFrame(2, 7, 85, 255, (byte)HarpType.U8, RGBs[0], RGBs[1], RGBs[2], 0));
+        }
+
+        //source.SelectMany(input => ProcessWriteColorsRgb(input, mask));
+
+        static HarpDataFrame ProcessWriteColorsRgbs(byte [] RGBs)
         {
             return HarpDataFrame.UpdateChesksum(new HarpDataFrame(2, 83, 46, 255, (byte)HarpType.U8, RGBs[0], RGBs[1], RGBs[2], RGBs[3], RGBs[4], RGBs[5], 0));
         }
