@@ -46,9 +46,9 @@ namespace Bonsai.Harp.CF
         WriteColorsRgb,
         WriteColorsRgbs,
 
-        RegisterSetOutputs,
-        RegisterClearOutputs,
-        RegisterToggleOutputs,
+        RegisterSetOutput,
+        RegisterClearOutput,
+        RegisterToggleOutput,
         RegisterStartPwm,
         RegisterStopPwm
     }
@@ -70,9 +70,9 @@ namespace Bonsai.Harp.CF
         "WriteColorsRgb: Positive integer array[3] (G,R,B)\n" +
         "WriteColorsRgbs: Positive integer array[6] (G,R,B,G,R,B)\n" +
         "\n" +
-        "RegisterSetOutputs: Bitmask U16\n" +
-        "RegisterClearOutputs: Bitmask U16\n" +
-        "RegisterToggleOutputs: Bitmask U16\n" +
+        "RegisterSetOutput: Bitmask U16\n" +
+        "RegisterClearOutput: Bitmask U16\n" +
+        "RegisterToggleOutput: Bitmask U16\n" +
         "RegisterStartPwm: Bitmask U8\n" +
         "RegisterStopPwm: Bitmask U8\n"
     )]
@@ -107,23 +107,23 @@ namespace Bonsai.Harp.CF
                 case BehaviorCommandType.ToggleOutput:
                     return Expression.Call(typeof(BehaviorCommand), "ProcessToggleOutput", new[] { expression.Type }, expression, GetBitMask());
 
-                case BehaviorCommandType.RegisterSetOutputs:
+                case BehaviorCommandType.RegisterSetOutput:
                     if (expression.Type != typeof(UInt16)) { expression = Expression.Convert(expression, typeof(UInt16)); }
-                    return Expression.Call(typeof(BehaviorCommand), "ProcessRegisterSetOutputs", null, expression);
-                case BehaviorCommandType.RegisterClearOutputs:
+                    return Expression.Call(typeof(BehaviorCommand), "ProcessRegisterSetOutput", null, expression);
+                case BehaviorCommandType.RegisterClearOutput:
                     if (expression.Type != typeof(UInt16)) { expression = Expression.Convert(expression, typeof(UInt16)); }
-                    return Expression.Call(typeof(BehaviorCommand), "ProcessRegisterClearOutputs", null, expression);
-                case BehaviorCommandType.RegisterToggleOutputs:
+                    return Expression.Call(typeof(BehaviorCommand), "ProcessRegisterClearOutput", null, expression);
+                case BehaviorCommandType.RegisterToggleOutput:
                     if (expression.Type != typeof(UInt16)) { expression = Expression.Convert(expression, typeof(UInt16)); }
-                    return Expression.Call(typeof(BehaviorCommand), "ProcessRegisterToggleOutputs", null, expression);
+                    return Expression.Call(typeof(BehaviorCommand), "ProcessRegisterToggleOutput", null, expression);
 
                 /************************************************************************/
                 /* Pwm                                                                  */
                 /************************************************************************/
                 case BehaviorCommandType.StartPwm:
-                    return Expression.Call(typeof(BehaviorCommand), "ProcessClearPokeLed", new[] { expression.Type }, expression, GetBitMask());
+                    return Expression.Call(typeof(BehaviorCommand), "ProcessStartPwm", new[] { expression.Type }, expression, GetBitMask());
                 case BehaviorCommandType.StopPwm:
-                    return Expression.Call(typeof(BehaviorCommand), "ProcessClearPokeValve", new[] { expression.Type }, expression, GetBitMask());
+                    return Expression.Call(typeof(BehaviorCommand), "ProcessStopPwm", new[] { expression.Type }, expression, GetBitMask());
                 case BehaviorCommandType.WritePwmFrequency:
                     if (expression.Type != typeof(UInt16)) { expression = Expression.Convert(expression, typeof(UInt16)); }
                     return Expression.Call(typeof(BehaviorCommand), "ProcessWritePwmFrequency", null, expression, GetBitMask());
@@ -173,26 +173,7 @@ namespace Bonsai.Harp.CF
         {
             return Expression.Convert(Expression.Constant(Mask), typeof(int));
         }
-
-        static void checkOuputsMask(int bitMask)
-        {
-            if (bitMask < 1024 || bitMask > 15360)
-                throw new InvalidOperationException("Invalid Mask selection. Only Digital0, Digital1, Digital2 and/or Digital3 can be selected");
-        }
-
-        static void checkLedsMask(int bitMask)
-        {
-            if (bitMask < 64 || bitMask > 192)
-                throw new InvalidOperationException("Invalid Mask selection. Only Led0 and/or Led1 can be selected");
-        }
-
-        static void checkRgbsMask(int bitMask)
-        {
-            if (bitMask < 256 || bitMask > 768)
-                throw new InvalidOperationException("Invalid Mask selection. Only Rgb0 and/or Rgb1 can be selected");
-        }
-
-
+        
         static HarpDataFrame createFrameU8(byte registerAddress, int content)
         {
             return HarpDataFrame.UpdateChesksum(new HarpDataFrame(2, 5, registerAddress, 255, (byte)HarpType.U8, (byte)content, 0));
@@ -210,27 +191,40 @@ namespace Bonsai.Harp.CF
         static HarpDataFrame ProcessClearOutput<TSource>(TSource input, int bMask)          { return createFrameU16(35, bMask); }
         static HarpDataFrame ProcessToggleOutput<TSource>(TSource input, int bMask)         { return createFrameU16(36, bMask); }
 
-        static HarpDataFrame ProcessRegisterSetOutputs(UInt16 input)                        { return createFrameU16(34, input); }
-        static HarpDataFrame ProcessRegisterClearOutputs(UInt16 input)                      { return createFrameU16(35, input); }
-        static HarpDataFrame ProcessRegisterToggleOutputs(UInt16 input)                     { return createFrameU16(36, input); }
+        static HarpDataFrame ProcessRegisterSetOutput(UInt16 input)                         { return createFrameU16(34, input); }
+        static HarpDataFrame ProcessRegisterClearOutput(UInt16 input)                       { return createFrameU16(35, input); }
+        static HarpDataFrame ProcessRegisterToggleOutput(UInt16 input)                      { return createFrameU16(36, input); }
 
         /************************************************************************/
         /* Pwm                                                                  */
         /************************************************************************/
-        static HarpDataFrame ProcessStartPwm<TSource>(TSource input, int bMask)             { checkOuputsMask(bMask); return createFrameU8(81, bMask); }
-        static HarpDataFrame ProcessStopPwm<TSource>(TSource input, int bMask)              { checkOuputsMask(bMask); return createFrameU8(82, bMask); }
-
-        static IEnumerable<HarpDataFrame> ProcessWritePwmFrequency(UInt16 input, int bMask)
+        static HarpDataFrame ProcessStartPwm<TSource>(TSource input, int bMask)
         {
-            checkOuputsMask(bMask);
+            if (bMask < 1024 || bMask > 15360)
+                throw new InvalidOperationException("Invalid Mask selection. Only Digital0, Digital1, Digital2 and/or Digital3 can be selected.");
 
-            if ((bMask & (UInt16)BehaviorPorts.Digital0) == (UInt16)BehaviorPorts.Digital0) yield return createFrameU16(73, input);
-            if ((bMask & (UInt16)BehaviorPorts.Digital1) == (UInt16)BehaviorPorts.Digital1) yield return createFrameU16(74, input);
-            if ((bMask & (UInt16)BehaviorPorts.Digital2) == (UInt16)BehaviorPorts.Digital2) yield return createFrameU16(75, input);
-            if ((bMask & (UInt16)BehaviorPorts.Digital3) == (UInt16)BehaviorPorts.Digital3) yield return createFrameU16(76, input);
+            return createFrameU8(81, bMask);
+        }
+        static HarpDataFrame ProcessStopPwm<TSource>(TSource input, int bMask)
+        {
+            if (bMask < 1024 || bMask > 15360)
+                throw new InvalidOperationException("Invalid Mask selection. Only Digital0, Digital1, Digital2 and/or Digital3 can be selected.");
+
+            return createFrameU8(82, bMask);
         }
 
-        //source.SelectMany(input => ProcessPwmFrequency(input, mask));
+        static HarpDataFrame ProcessWritePwmFrequency(UInt16 input, int bMask)
+        {
+            switch (bMask)
+            {
+                case (UInt16)BehaviorPorts.Digital0: return createFrameU16(73, input);
+                case (UInt16)BehaviorPorts.Digital1: return createFrameU16(74, input);
+                case (UInt16)BehaviorPorts.Digital2: return createFrameU16(75, input);
+                case (UInt16)BehaviorPorts.Digital3: return createFrameU16(76, input);
+                default:
+                    throw new InvalidOperationException("Invalid Mask selection. Only Digital0, Digital1, Digital2 or Digital3 can be selected.");
+            }
+        }
 
         static HarpDataFrame ProcessRegisterStartPwm(byte input)                          { return createFrameU16(81, input); }
         static HarpDataFrame ProcessRegisterStopPwm(byte input)                           { return createFrameU16(82, input); }
@@ -238,56 +232,58 @@ namespace Bonsai.Harp.CF
         /************************************************************************/
         /* Led                                                                  */
         /************************************************************************/
-        static IEnumerable<HarpDataFrame> ProcessWriteLedCurrent(UInt16 input, int bMask)
+        static HarpDataFrame ProcessWriteLedCurrent(byte input, int bMask)
         {
-            checkLedsMask(bMask);
-
-            if ((bMask & (UInt16)BehaviorPorts.Led0) == (UInt16)BehaviorPorts.Led0) yield return createFrameU8(86, input);
-            if ((bMask & (UInt16)BehaviorPorts.Led1) == (UInt16)BehaviorPorts.Led1) yield return createFrameU8(87, input);
+            switch (bMask)
+            {
+                case (UInt16)BehaviorPorts.Led0: return createFrameU8(86, input);
+                case (UInt16)BehaviorPorts.Led1: return createFrameU8(86, input);
+                default:
+                    throw new InvalidOperationException("Invalid Mask selection. Only Led0 or Led1 can be selected.");
+            }
         }
-
-        //source.SelectMany(input => ProcessWriteLedCurrent(input, mask));
 
         /************************************************************************/
         /* Pulse Period                                                         */
         /************************************************************************/
-        static IEnumerable<HarpDataFrame> ProcessWritePulsePeriod(UInt16 input, int bMask)
+        static HarpDataFrame ProcessWritePulsePeriod(UInt16 input, int bMask)
         {
-            checkOuputsMask(bMask);
-
-            if ((bMask & (UInt16)BehaviorPorts.PokeLed0) == (UInt16)BehaviorPorts.PokeLed0) yield return createFrameU16(59, input);
-            if ((bMask & (UInt16)BehaviorPorts.PokeLed1) == (UInt16)BehaviorPorts.PokeLed1) yield return createFrameU16(60, input);
-            if ((bMask & (UInt16)BehaviorPorts.PokeLed2) == (UInt16)BehaviorPorts.PokeLed2) yield return createFrameU16(61, input);
-            if ((bMask & (UInt16)BehaviorPorts.PokeValve0) == (UInt16)BehaviorPorts.PokeValve0) yield return createFrameU16(62, input);
-            if ((bMask & (UInt16)BehaviorPorts.PokeValve1) == (UInt16)BehaviorPorts.PokeValve1) yield return createFrameU16(63, input);
-            if ((bMask & (UInt16)BehaviorPorts.PokeValve2) == (UInt16)BehaviorPorts.PokeValve2) yield return createFrameU16(64, input);
-            if ((bMask & (UInt16)BehaviorPorts.Led0) == (UInt16)BehaviorPorts.Led0) yield return createFrameU16(65, input);
-            if ((bMask & (UInt16)BehaviorPorts.Led1) == (UInt16)BehaviorPorts.Led1) yield return createFrameU16(66, input);
-            if ((bMask & (UInt16)BehaviorPorts.Rgb0) == (UInt16)BehaviorPorts.Rgb0) yield return createFrameU16(67, input);
-            if ((bMask & (UInt16)BehaviorPorts.Rgb1) == (UInt16)BehaviorPorts.Rgb1) yield return createFrameU16(68, input);
-            if ((bMask & (UInt16)BehaviorPorts.Digital0) == (UInt16)BehaviorPorts.Digital0) yield return createFrameU16(69, input);
-            if ((bMask & (UInt16)BehaviorPorts.Digital1) == (UInt16)BehaviorPorts.Digital1) yield return createFrameU16(70, input);
-            if ((bMask & (UInt16)BehaviorPorts.Digital2) == (UInt16)BehaviorPorts.Digital2) yield return createFrameU16(71, input);
-            if ((bMask & (UInt16)BehaviorPorts.Digital3) == (UInt16)BehaviorPorts.Digital3) yield return createFrameU16(71, input);
+            switch (bMask)
+            {
+                case (UInt16)BehaviorPorts.PokeLed0: return createFrameU16(59, input);
+                case (UInt16)BehaviorPorts.PokeLed1: return createFrameU16(60, input);
+                case (UInt16)BehaviorPorts.PokeLed2: return createFrameU16(61, input);
+                case (UInt16)BehaviorPorts.PokeValve0: return createFrameU16(62, input);
+                case (UInt16)BehaviorPorts.PokeValve1: return createFrameU16(63, input);
+                case (UInt16)BehaviorPorts.PokeValve2: return createFrameU16(64, input);
+                case (UInt16)BehaviorPorts.Led0: return createFrameU16(65, input);
+                case (UInt16)BehaviorPorts.Led1: return createFrameU16(66, input);
+                case (UInt16)BehaviorPorts.Rgb0: return createFrameU16(67, input);
+                case (UInt16)BehaviorPorts.Rgb1: return createFrameU16(68, input);
+                case (UInt16)BehaviorPorts.Digital0: return createFrameU16(69, input);
+                case (UInt16)BehaviorPorts.Digital1: return createFrameU16(70, input);
+                case (UInt16)BehaviorPorts.Digital2: return createFrameU16(71, input);
+                case (UInt16)BehaviorPorts.Digital3: return createFrameU16(71, input);
+                default:
+                    throw new InvalidOperationException("Invalid Mask selection. Only one can be selected.");
+            }
         }
-
-        //source.SelectMany(input => ProcessWritePulsePeriod(input, mask));
 
         /************************************************************************/
         /* RGbs                                                                 */
         /************************************************************************/
-        static IEnumerable<HarpDataFrame> ProcessWriteColorsRgb(byte[] RGBs, int bMask)
+        static HarpDataFrame ProcessWriteColorsRgb(byte[] RGBs, int bMask)
         {
-            checkRgbsMask(bMask);
-
-            if ((bMask & (UInt16)BehaviorPorts.Rgb0) == (UInt16)BehaviorPorts.Rgb0)
-                yield return HarpDataFrame.UpdateChesksum(new HarpDataFrame(2, 7, 84, 255, (byte)HarpType.U8, RGBs[0], RGBs[1], RGBs[2], 0));
-
-            if ((bMask & (UInt16)BehaviorPorts.Rgb1) == (UInt16)BehaviorPorts.Rgb1)
-                yield return HarpDataFrame.UpdateChesksum(new HarpDataFrame(2, 7, 85, 255, (byte)HarpType.U8, RGBs[0], RGBs[1], RGBs[2], 0));
+            switch (bMask)
+            {
+                case (UInt16)BehaviorPorts.Rgb0:
+                    return HarpDataFrame.UpdateChesksum(new HarpDataFrame(2, 7, 84, 255, (byte)HarpType.U8, RGBs[0], RGBs[1], RGBs[2], 0));
+                case (UInt16)BehaviorPorts.Rgb1:
+                    return HarpDataFrame.UpdateChesksum(new HarpDataFrame(2, 7, 85, 255, (byte)HarpType.U8, RGBs[0], RGBs[1], RGBs[2], 0));
+                default:
+                    throw new InvalidOperationException("Invalid Mask selection. Only Rgb0 or Rgb1 can be selected.");
+            }
         }
-
-        //source.SelectMany(input => ProcessWriteColorsRgb(input, mask));
 
         static HarpDataFrame ProcessWriteColorsRgbs(byte [] RGBs)
         {
