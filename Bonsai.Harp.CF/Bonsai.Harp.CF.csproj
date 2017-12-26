@@ -70,8 +70,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="ArquimedesEvent.cs" />
-    <Compile Include="ArquimedesCommand.cs" />
+    <Compile Include="ArchimedesEvent.cs" />
+    <Compile Include="ArchimedesCommand.cs" />
     <Compile Include="BehaviorCommand.cs" />
     <Compile Include="BehaviorEvent.cs" />
     <Compile Include="CameraEvent.cs" />
