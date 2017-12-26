@@ -112,57 +112,57 @@ namespace Bonsai.Harp.CF
         /************************************************************************/
         /* Register: START_PWM                                                  */
         /************************************************************************/
-        static HarpDataFrame ProcessSetTrigger0<TSource>(TSource input)
+        static HarpMessage ProcessSetTrigger0<TSource>(TSource input)
         {
-            return HarpDataFrame.UpdateChesksum(new HarpDataFrame(2, 5, 60, 255, (byte)HarpType.U8, 1, 0));
+            return new HarpMessage(true, 2, 5, 60, 255, (byte)PayloadType.U8, 1, 0);
         }
-        static HarpDataFrame ProcessSetTrigger1<TSource>(TSource input)
+        static HarpMessage ProcessSetTrigger1<TSource>(TSource input)
         {
-            return HarpDataFrame.UpdateChesksum(new HarpDataFrame(2, 5, 60, 255, (byte)HarpType.U8, 2, 0));
+            return new HarpMessage(true, 2, 5, 60, 255, (byte)PayloadType.U8, 2, 0);
         }
-        static HarpDataFrame ProcessSetTrigger2<TSource>(TSource input)
+        static HarpMessage ProcessSetTrigger2<TSource>(TSource input)
         {
-            return HarpDataFrame.UpdateChesksum(new HarpDataFrame(2, 5, 60, 255, (byte)HarpType.U8, 4, 0));
+            return new HarpMessage(true, 2, 5, 60, 255, (byte)PayloadType.U8, 4, 0);
         }
-        static HarpDataFrame ProcessSetTrigger3<TSource>(TSource input)
+        static HarpMessage ProcessSetTrigger3<TSource>(TSource input)
         {
-            return HarpDataFrame.UpdateChesksum(new HarpDataFrame(2, 5, 60, 255, (byte)HarpType.U8, 8, 0));
+            return new HarpMessage(true, 2, 5, 60, 255, (byte)PayloadType.U8, 8, 0);
         }
-        static HarpDataFrame ProcessTriggersSet(byte input)
+        static HarpMessage ProcessTriggersSet(byte input)
         {
-            return HarpDataFrame.UpdateChesksum(new HarpDataFrame(2, 5, 60, 255, (byte)HarpType.U8, (byte)(input & 0x0F), 0));
+            return new HarpMessage(true, 2, 5, 60, 255, (byte)PayloadType.U8, (byte)(input & 0x0F), 0);
         }
 
         /************************************************************************/
         /* Register: STOP_PWM                                                   */
         /************************************************************************/
-        static HarpDataFrame ProcessClearTrigger0<TSource>(TSource input)
+        static HarpMessage ProcessClearTrigger0<TSource>(TSource input)
         {
-            return HarpDataFrame.UpdateChesksum(new HarpDataFrame(2, 5, 61, 255, (byte)HarpType.U8, 1, 0));
+            return new HarpMessage(true, 2, 5, 61, 255, (byte)PayloadType.U8, 1, 0);
         }
-        static HarpDataFrame ProcessClearTrigger1<TSource>(TSource input)
+        static HarpMessage ProcessClearTrigger1<TSource>(TSource input)
         {
-            return HarpDataFrame.UpdateChesksum(new HarpDataFrame(2, 5, 61, 255, (byte)HarpType.U8, 2, 0));
+            return new HarpMessage(true, 2, 5, 61, 255, (byte)PayloadType.U8, 2, 0);
         }
-        static HarpDataFrame ProcessClearTrigger2<TSource>(TSource input)
+        static HarpMessage ProcessClearTrigger2<TSource>(TSource input)
         {
-            return HarpDataFrame.UpdateChesksum(new HarpDataFrame(2, 5, 61, 255, (byte)HarpType.U8, 4, 0));
+            return new HarpMessage(true, 2, 5, 61, 255, (byte)PayloadType.U8, 4, 0);
         }
-        static HarpDataFrame ProcessClearTrigger3<TSource>(TSource input)
+        static HarpMessage ProcessClearTrigger3<TSource>(TSource input)
         {
-            return HarpDataFrame.UpdateChesksum(new HarpDataFrame(2, 5, 61, 255, (byte)HarpType.U8, 8, 0));
+            return new HarpMessage(true, 2, 5, 61, 255, (byte)PayloadType.U8, 8, 0);
         }
-        static HarpDataFrame ProcessTriggersClear(byte input)
+        static HarpMessage ProcessTriggersClear(byte input)
         {
-            return HarpDataFrame.UpdateChesksum(new HarpDataFrame(2, 5, 61, 255, (byte)HarpType.U8, (byte)(input & 0x0F), 0));
+            return new HarpMessage(true, 2, 5, 61, 255, (byte)PayloadType.U8, (byte)(input & 0x0F), 0);
         }
 
         /************************************************************************/
         /* Register: CH_ENABLE                                                  */
         /************************************************************************/
-        static HarpDataFrame ProcessOutputsEnable(byte input)
+        static HarpMessage ProcessOutputsEnable(byte input)
         {
-            return HarpDataFrame.UpdateChesksum(new HarpDataFrame(2, 5, 69, 255, (byte)HarpType.U8, (byte)(input & 0x0F), 0));
+            return new HarpMessage(true, 2, 5, 69, 255, (byte)PayloadType.U8, (byte)(input & 0x0F), 0);
         }
     }
 }

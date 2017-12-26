@@ -81,16 +81,16 @@ namespace Bonsai.Harp.CF
         /************************************************************************/
         /* Register: R_TIMESTAMP_SECOND                                         */
         /************************************************************************/
-        static HarpDataFrame ProcessTimestamp(UInt32 input)
+        static HarpMessage ProcessTimestamp(UInt32 input)
         {
-            return HarpDataFrame.UpdateChesksum(new HarpDataFrame(2, 8, 8, 255, (byte)HarpType.U32, (byte)(input & 255), (byte)((input >> 8) & 255), (byte)((input >> 16) & 255), (byte)((input >> 24) & 255), 0));
+            return new HarpMessage(true, 2, 8, 8, 255, (byte)PayloadType.U32, (byte)(input & 255), (byte)((input >> 8) & 255), (byte)((input >> 16) & 255), (byte)((input >> 24) & 255), 0);
         }
 
-        static HarpDataFrame ProcessSynchronizeTimestamp<TSource>(TSource input)
+        static HarpMessage ProcessSynchronizeTimestamp<TSource>(TSource input)
         {
             UInt32 unixTimestamp = (UInt32)(DateTime.UtcNow.Subtract(new DateTime(1904, 1, 1))).TotalSeconds;
 
-            return HarpDataFrame.UpdateChesksum(new HarpDataFrame(2, 8, 8, 255, (byte)HarpType.U32, (byte)(unixTimestamp & 255), (byte)((unixTimestamp >> 8) & 255), (byte)((unixTimestamp >> 16) & 255), (byte)((unixTimestamp >> 24) & 255), 0));
+            return new HarpMessage(true, 2, 8, 8, 255, (byte)PayloadType.U32, (byte)(unixTimestamp & 255), (byte)((unixTimestamp >> 8) & 255), (byte)((unixTimestamp >> 16) & 255), (byte)((unixTimestamp >> 24) & 255), 0);
         }
     }
 }

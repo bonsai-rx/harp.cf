@@ -94,16 +94,16 @@ namespace Bonsai.Harp.CF
             return seconds + microseconds * 32e-6;
         }
 
-        static bool is_evt_timestamp(HarpDataFrame input) { return ((input.Address == 8) && (input.Error == false) && (input.Id == MessageId.Event)); }
+        static bool is_evt_timestamp(HarpMessage input) { return ((input.Address == 8) && (input.Error == false) && (input.MessageType == MessageType.Event)); }
         
-        static IObservable<UInt32> ProcessTimestamp(IObservable<HarpDataFrame> source)
+        static IObservable<UInt32> ProcessTimestamp(IObservable<HarpMessage> source)
         {
-            return source.Where(is_evt_timestamp).Select(input => { return BitConverter.ToUInt32(input.Message, 11); });
+            return source.Where(is_evt_timestamp).Select(input => { return BitConverter.ToUInt32(input.MessageBytes, 11); });
         }
 
-        static IObservable<Timestamped<UInt32>> ProcessRegisterTimestamp(IObservable<HarpDataFrame> source)
+        static IObservable<Timestamped<UInt32>> ProcessRegisterTimestamp(IObservable<HarpMessage> source)
         {
-            return source.Where(is_evt_timestamp).Select(input => { return new Timestamped<UInt32>(BitConverter.ToUInt32(input.Message, 11), ParseTimestamp(input.Message, 5)); });
+            return source.Where(is_evt_timestamp).Select(input => { return new Timestamped<UInt32>(BitConverter.ToUInt32(input.MessageBytes, 11), ParseTimestamp(input.MessageBytes, 5)); });
         }        
     }
 }

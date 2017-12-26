@@ -50,14 +50,14 @@ namespace Bonsai.Harp.CF
             return expression;
         }
 
-        static HarpDataFrame ProcessUseBnc2<TSource>(TSource input)
+        static HarpMessage ProcessUseBnc2<TSource>(TSource input)
         {
-            return HarpDataFrame.UpdateChesksum(new HarpDataFrame(2, 5, 42, 255, (byte)HarpType.U8, 1, 0));
+            return new HarpMessage(true, 2, 5, 42, 255, (byte)PayloadType.U8, 1, 0);
         }
 
-        static HarpDataFrame ProcessUseDio6B<TSource>(TSource input)
+        static HarpMessage ProcessUseDio6B<TSource>(TSource input)
         {
-            return HarpDataFrame.UpdateChesksum(new HarpDataFrame(2, 5, 42, 255, (byte)HarpType.U8, 0, 0));
+            return new HarpMessage(true, 2, 5, 42, 255, (byte)PayloadType.U8, 0, 0);
         }
     }
 }

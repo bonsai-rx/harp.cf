@@ -87,34 +87,34 @@ namespace Bonsai.Harp.CF
             return seconds + microseconds * 32e-6;
         }
 
-        static bool is_evt73(HarpDataFrame input) { return ((input.Address == 73) && (input.Error == false) && (input.Id == MessageId.Event)); }
+        static bool is_evt73(HarpMessage input) { return ((input.Address == 73) && (input.Error == false) && (input.MessageType == MessageType.Event)); }
 
         /************************************************************************/
         /* Register: EXEC_STATE                                                 */
         /************************************************************************/
-        static IObservable<bool> ProcessPwmOutput0(IObservable<HarpDataFrame> source)
+        static IObservable<bool> ProcessPwmOutput0(IObservable<HarpMessage> source)
         {
-            return source.Where(is_evt73).Select(input => { return ((input.Message[11] & (1 << 0)) == (1 << 0)); }).DistinctUntilChanged();
+            return source.Where(is_evt73).Select(input => { return ((input.MessageBytes[11] & (1 << 0)) == (1 << 0)); }).DistinctUntilChanged();
         }
-        static IObservable<bool> ProcessPwmOutput1(IObservable<HarpDataFrame> source)
+        static IObservable<bool> ProcessPwmOutput1(IObservable<HarpMessage> source)
         {
-            return source.Where(is_evt73).Select(input => { return ((input.Message[11] & (1 << 1)) == (1 << 1)); }).DistinctUntilChanged();
+            return source.Where(is_evt73).Select(input => { return ((input.MessageBytes[11] & (1 << 1)) == (1 << 1)); }).DistinctUntilChanged();
         }
-        static IObservable<bool> ProcessPwmOutput2(IObservable<HarpDataFrame> source)
+        static IObservable<bool> ProcessPwmOutput2(IObservable<HarpMessage> source)
         {
-            return source.Where(is_evt73).Select(input => { return ((input.Message[11] & (1 << 2)) == (1 << 2)); }).DistinctUntilChanged();
+            return source.Where(is_evt73).Select(input => { return ((input.MessageBytes[11] & (1 << 2)) == (1 << 2)); }).DistinctUntilChanged();
         }
-        static IObservable<bool> ProcessPwmOutput3(IObservable<HarpDataFrame> source)
+        static IObservable<bool> ProcessPwmOutput3(IObservable<HarpMessage> source)
         {
-            return source.Where(is_evt73).Select(input => { return ((input.Message[11] & (1 << 3)) == (1 << 3)); }).DistinctUntilChanged();
+            return source.Where(is_evt73).Select(input => { return ((input.MessageBytes[11] & (1 << 3)) == (1 << 3)); }).DistinctUntilChanged();
         }
 
         /************************************************************************/
         /* Register: EXEC_STATE                                                 */
         /************************************************************************/
-        static IObservable<Timestamped<byte>> ProcessRegisterPwmOutputs(IObservable<HarpDataFrame> source)
+        static IObservable<Timestamped<byte>> ProcessRegisterPwmOutputs(IObservable<HarpMessage> source)
         {
-            return source.Where(is_evt73).Select(input => { return new Timestamped<byte>(input.Message[11], ParseTimestamp(input.Message, 5)); });
+            return source.Where(is_evt73).Select(input => { return new Timestamped<byte>(input.MessageBytes[11], ParseTimestamp(input.MessageBytes, 5)); });
         }
     }
 }

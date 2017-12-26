@@ -151,107 +151,107 @@ namespace Bonsai.Harp.CF
         /************************************************************************/
         /* Registers: START_CAMS and STOP_CAMS                                  */
         /************************************************************************/
-        static HarpDataFrame ProcessStartCamera0<TSource>(TSource input)
+        static HarpMessage ProcessStartCamera0<TSource>(TSource input)
         {
-            return HarpDataFrame.UpdateChesksum(new HarpDataFrame(2, 5, 32, 255, (byte)HarpType.U8, 1, 0));
+            return new HarpMessage(true, 2, 5, 32, 255, (byte)PayloadType.U8, 1, 0);
         }
-        static HarpDataFrame ProcessStartCamera1<TSource>(TSource input)
+        static HarpMessage ProcessStartCamera1<TSource>(TSource input)
         {
-            return HarpDataFrame.UpdateChesksum(new HarpDataFrame(2, 5, 32, 255, (byte)HarpType.U8, 2, 0));
+            return new HarpMessage(true, 2, 5, 32, 255, (byte)PayloadType.U8, 2, 0);
         }
-        static HarpDataFrame ProcessStartBothCameras<TSource>(TSource input)
+        static HarpMessage ProcessStartBothCameras<TSource>(TSource input)
         {
-            return HarpDataFrame.UpdateChesksum(new HarpDataFrame(2, 5, 32, 255, (byte)HarpType.U8, 3, 0));
+            return new HarpMessage(true, 2, 5, 32, 255, (byte)PayloadType.U8, 3, 0);
         }
 
-        static HarpDataFrame ProcessStopCamera0<TSource>(TSource input)
+        static HarpMessage ProcessStopCamera0<TSource>(TSource input)
         {
-            return HarpDataFrame.UpdateChesksum(new HarpDataFrame(2, 5, 33, 255, (byte)HarpType.U8, 1, 0));
+            return new HarpMessage(true, 2, 5, 33, 255, (byte)PayloadType.U8, 1, 0);
         }
-        static HarpDataFrame ProcessStopCamera1<TSource>(TSource input)
+        static HarpMessage ProcessStopCamera1<TSource>(TSource input)
         {
-            return HarpDataFrame.UpdateChesksum(new HarpDataFrame(2, 5, 33, 255, (byte)HarpType.U8, 2, 0));
+            return new HarpMessage(true, 2, 5, 33, 255, (byte)PayloadType.U8, 2, 0);
         }
-        static HarpDataFrame ProcessStopBothCameras<TSource>(TSource input)
+        static HarpMessage ProcessStopBothCameras<TSource>(TSource input)
         {
-            return HarpDataFrame.UpdateChesksum(new HarpDataFrame(2, 5, 33, 255, (byte)HarpType.U8, 3, 0));
+            return new HarpMessage(true, 2, 5, 33, 255, (byte)PayloadType.U8, 3, 0);
         }
 
         /************************************************************************/
         /* Registers: ENABLE_MOTORS and DISABLE_MOTORS                          */
         /************************************************************************/
-        static HarpDataFrame ProcessEnableMotor0<TSource>(TSource input)
+        static HarpMessage ProcessEnableMotor0<TSource>(TSource input)
         {
-            return HarpDataFrame.UpdateChesksum(new HarpDataFrame(2, 5, 34, 255, (byte)HarpType.U8, 1, 0));
+            return new HarpMessage(true, 2, 5, 34, 255, (byte)PayloadType.U8, 1, 0);
         }
-        static HarpDataFrame ProcessEnableMotor1<TSource>(TSource input)
+        static HarpMessage ProcessEnableMotor1<TSource>(TSource input)
         {
-            return HarpDataFrame.UpdateChesksum(new HarpDataFrame(2, 5, 34, 255, (byte)HarpType.U8, 2, 0));
+            return new HarpMessage(true, 2, 5, 34, 255, (byte)PayloadType.U8, 2, 0);
         }
-        static HarpDataFrame ProcessEnableBothMotors<TSource>(TSource input)
+        static HarpMessage ProcessEnableBothMotors<TSource>(TSource input)
         {
-            return HarpDataFrame.UpdateChesksum(new HarpDataFrame(2, 5, 34, 255, (byte)HarpType.U8, 3, 0));
+            return new HarpMessage(true, 2, 5, 34, 255, (byte)PayloadType.U8, 3, 0);
         }
 
-        static HarpDataFrame ProcessDisableMotor0<TSource>(TSource input)
+        static HarpMessage ProcessDisableMotor0<TSource>(TSource input)
         {
-            return HarpDataFrame.UpdateChesksum(new HarpDataFrame(2, 5, 35, 255, (byte)HarpType.U8, 1, 0));
+            return new HarpMessage(true, 2, 5, 35, 255, (byte)PayloadType.U8, 1, 0);
         }
-        static HarpDataFrame ProcessDisableMotor1<TSource>(TSource input)
+        static HarpMessage ProcessDisableMotor1<TSource>(TSource input)
         {
-            return HarpDataFrame.UpdateChesksum(new HarpDataFrame(2, 5, 35, 255, (byte)HarpType.U8, 2, 0));
+            return new HarpMessage(true, 2, 5, 35, 255, (byte)PayloadType.U8, 2, 0);
         }
-        static HarpDataFrame ProcessDisableBothMotors<TSource>(TSource input)
+        static HarpMessage ProcessDisableBothMotors<TSource>(TSource input)
         {
-            return HarpDataFrame.UpdateChesksum(new HarpDataFrame(2, 5, 35, 255, (byte)HarpType.U8, 3, 0));
+            return new HarpMessage(true, 2, 5, 35, 255, (byte)PayloadType.U8, 3, 0);
         }
 
         /************************************************************************/
         /* Registers: CAM0_MMODE_PULSE and CAM1_MMODE_PULSE                     */
         /************************************************************************/
-        static HarpDataFrame ProcessPositionMotor0(UInt16 input)
+        static HarpMessage ProcessPositionMotor0(UInt16 input)
         {
-            return HarpDataFrame.UpdateChesksum(new HarpDataFrame(2, 6, 52, 255, (byte)HarpType.U16, (byte)(input & 255), (byte)((input >> 8) & 255), 0));
+            return new HarpMessage(true, 2, 6, 52, 255, (byte)PayloadType.U16, (byte)(input & 255), (byte)((input >> 8) & 255), 0);
         }
-        static HarpDataFrame ProcessPositionMotor1(UInt16 input)
+        static HarpMessage ProcessPositionMotor1(UInt16 input)
         {
-            return HarpDataFrame.UpdateChesksum(new HarpDataFrame(2, 6, 56, 255, (byte)HarpType.U16, (byte)(input & 255), (byte)((input >> 8) & 255), 0));
+            return new HarpMessage(true, 2, 6, 56, 255, (byte)PayloadType.U16, (byte)(input & 255), (byte)((input >> 8) & 255), 0);
         }
 
         /************************************************************************/
         /* Registers: SET_OUTPUTS, CLR_OUTPUTS and OUTPUTS                      */
         /************************************************************************/
-        static HarpDataFrame ProcessOutTrig0(bool input)
+        static HarpMessage ProcessOutTrig0(bool input)
         {
             if (input)
-                return HarpDataFrame.UpdateChesksum(new HarpDataFrame(2, 5, 36, 255, (byte)HarpType.U8, 1, 0));
+                return new HarpMessage(true, 2, 5, 36, 255, (byte)PayloadType.U8, 1, 0);
             else
-                return HarpDataFrame.UpdateChesksum(new HarpDataFrame(2, 5, 37, 255, (byte)HarpType.U8, 1, 0));
+                return new HarpMessage(true, 2, 5, 37, 255, (byte)PayloadType.U8, 1, 0);
         }
-        static HarpDataFrame ProcessOutSync0(bool input)
+        static HarpMessage ProcessOutSync0(bool input)
         {
             if (input)
-                return HarpDataFrame.UpdateChesksum(new HarpDataFrame(2, 5, 36, 255, (byte)HarpType.U8, 2, 0));
+                return new HarpMessage(true, 2, 5, 36, 255, (byte)PayloadType.U8, 2, 0);
             else
-                return HarpDataFrame.UpdateChesksum(new HarpDataFrame(2, 5, 37, 255, (byte)HarpType.U8, 2, 0));
+                return new HarpMessage(true, 2, 5, 37, 255, (byte)PayloadType.U8, 2, 0);
         }
-        static HarpDataFrame ProcessOutTrig1(bool input)
+        static HarpMessage ProcessOutTrig1(bool input)
         {
             if (input)
-                return HarpDataFrame.UpdateChesksum(new HarpDataFrame(2, 5, 36, 255, (byte)HarpType.U8, 4, 0));
+                return new HarpMessage(true, 2, 5, 36, 255, (byte)PayloadType.U8, 4, 0);
             else
-                return HarpDataFrame.UpdateChesksum(new HarpDataFrame(2, 5, 37, 255, (byte)HarpType.U8, 4, 0));
+                return new HarpMessage(true, 2, 5, 37, 255, (byte)PayloadType.U8, 4, 0);
         }
-        static HarpDataFrame ProcessOutSync1(bool input)
+        static HarpMessage ProcessOutSync1(bool input)
         {
             if (input)
-                return HarpDataFrame.UpdateChesksum(new HarpDataFrame(2, 5, 36, 255, (byte)HarpType.U8, 8, 0));
+                return new HarpMessage(true, 2, 5, 36, 255, (byte)PayloadType.U8, 8, 0);
             else
-                return HarpDataFrame.UpdateChesksum(new HarpDataFrame(2, 5, 37, 255, (byte)HarpType.U8, 8, 0));
+                return new HarpMessage(true, 2, 5, 37, 255, (byte)PayloadType.U8, 8, 0);
         }
-        static HarpDataFrame ProcessOutputs(byte input)
+        static HarpMessage ProcessOutputs(byte input)
         {
-            return HarpDataFrame.UpdateChesksum(new HarpDataFrame(2, 5, 38, 255, (byte)HarpType.U8, input, 0));
+            return new HarpMessage(true, 2, 5, 38, 255, (byte)PayloadType.U8, input, 0);
         }
     }
 }

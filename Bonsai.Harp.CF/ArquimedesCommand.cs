@@ -191,92 +191,92 @@ namespace Bonsai.Harp.CF
         /************************************************************************/
         /* Register: POS_TARGET                                                  */
         /************************************************************************/
-        static HarpDataFrame ProcessLoadPosition(UInt16 input)
+        static HarpMessage ProcessLoadPosition(UInt16 input)
         {
-            return HarpDataFrame.UpdateChesksum(new HarpDataFrame(2, 6, 56, 255, (byte)HarpType.U16, (byte)(input & 255), (byte)((input >> 8) & 255), 0));
+            return new HarpMessage(true, 2, 6, 56, 255, (byte)PayloadType.U16, (byte)(input & 255), (byte)((input >> 8) & 255), 0);
         }
 
         /************************************************************************/
         /* Registers: RESET_ANGLE, RESET_MOTOR, HIDE_LEVER                        */
         /************************************************************************/
-        static HarpDataFrame ProcessResetLeverAngle<TSource>(TSource input)
+        static HarpMessage ProcessResetLeverAngle<TSource>(TSource input)
         {
-            return HarpDataFrame.UpdateChesksum(new HarpDataFrame(2, 5, 39, 255, (byte)HarpType.U8, 1, 0));
+            return new HarpMessage(true, 2, 5, 39, 255, (byte)PayloadType.U8, 1, 0);
         }
-        static HarpDataFrame ProcessResetLoadPosition<TSource>(TSource input)
+        static HarpMessage ProcessResetLoadPosition<TSource>(TSource input)
         {
-            return HarpDataFrame.UpdateChesksum(new HarpDataFrame(2, 5, 40, 255, (byte)HarpType.U8, 1, 0));
+            return new HarpMessage(true, 2, 5, 40, 255, (byte)PayloadType.U8, 1, 0);
         }
-        static HarpDataFrame ProcessHideLever(bool input)
+        static HarpMessage ProcessHideLever(bool input)
         {
-            return HarpDataFrame.UpdateChesksum(new HarpDataFrame(2, 5, 41, 255, (byte)HarpType.U8, 1, 0));
+            return new HarpMessage(true, 2, 5, 41, 255, (byte)PayloadType.U8, 1, 0);
         }
-        static HarpDataFrame ProcessUnhideLever(bool input)
+        static HarpMessage ProcessUnhideLever(bool input)
         {
-            return HarpDataFrame.UpdateChesksum(new HarpDataFrame(2, 5, 41, 255, (byte)HarpType.U8, 0, 0));
+            return new HarpMessage(true, 2, 5, 41, 255, (byte)PayloadType.U8, 0, 0);
         }
 
         /************************************************************************/
         /* Registers: SET_DOUTS, CLR_DOUTS                                      */
         /************************************************************************/
-        static HarpDataFrame CreateHarpFrameForDigitalOutputs (bool toHigh, int DigitalOutputNumber)
+        static HarpMessage CreateHarpFrameForDigitalOutputs (bool toHigh, int DigitalOutputNumber)
         {
             if (toHigh)
-                return HarpDataFrame.UpdateChesksum(new HarpDataFrame(2, 5, 42, 255, (byte)HarpType.U8, (byte)(1 << DigitalOutputNumber), 0));
+                return new HarpMessage(true, 2, 5, 42, 255, (byte)PayloadType.U8, (byte)(1 << DigitalOutputNumber), 0);
             else
-                return HarpDataFrame.UpdateChesksum(new HarpDataFrame(2, 5, 43, 255, (byte)HarpType.U8, (byte)(1 << DigitalOutputNumber), 0));
+                return new HarpMessage(true, 2, 5, 43, 255, (byte)PayloadType.U8, (byte)(1 << DigitalOutputNumber), 0);
         }
-        static HarpDataFrame ProcessDigitalOutput0(bool input) { return CreateHarpFrameForDigitalOutputs(input, 0); }
-        static HarpDataFrame ProcessDigitalOutput1(bool input) { return CreateHarpFrameForDigitalOutputs(input, 1); }
-        static HarpDataFrame ProcessDigitalOutput2(bool input) { return CreateHarpFrameForDigitalOutputs(input, 2); }
-        static HarpDataFrame ProcessDigitalOutput3(bool input) { return CreateHarpFrameForDigitalOutputs(input, 3); }
-        static HarpDataFrame ProcessDigitalOutput4(bool input) { return CreateHarpFrameForDigitalOutputs(input, 4); }
-        static HarpDataFrame ProcessDigitalOutput5(bool input) { return CreateHarpFrameForDigitalOutputs(input, 5); }
+        static HarpMessage ProcessDigitalOutput0(bool input) { return CreateHarpFrameForDigitalOutputs(input, 0); }
+        static HarpMessage ProcessDigitalOutput1(bool input) { return CreateHarpFrameForDigitalOutputs(input, 1); }
+        static HarpMessage ProcessDigitalOutput2(bool input) { return CreateHarpFrameForDigitalOutputs(input, 2); }
+        static HarpMessage ProcessDigitalOutput3(bool input) { return CreateHarpFrameForDigitalOutputs(input, 3); }
+        static HarpMessage ProcessDigitalOutput4(bool input) { return CreateHarpFrameForDigitalOutputs(input, 4); }
+        static HarpMessage ProcessDigitalOutput5(bool input) { return CreateHarpFrameForDigitalOutputs(input, 5); }
 
-        static HarpDataFrame ProcessDigitalOutputsSet(byte input)
+        static HarpMessage ProcessDigitalOutputsSet(byte input)
         {
-            return HarpDataFrame.UpdateChesksum(new HarpDataFrame(2, 5, 42, 255, (byte)HarpType.U8, input, 0));
+            return new HarpMessage(true, 2, 5, 42, 255, (byte)PayloadType.U8, input, 0);
         }
-        static HarpDataFrame ProcessDigitalOutputsClear(byte input)
+        static HarpMessage ProcessDigitalOutputsClear(byte input)
         {
-            return HarpDataFrame.UpdateChesksum(new HarpDataFrame(2, 5, 43, 255, (byte)HarpType.U8, input, 0));
+            return new HarpMessage(true, 2, 5, 43, 255, (byte)PayloadType.U8, input, 0);
         }
 
         /************************************************************************/
         /* Registers: EN_LED_CONFS, DIS_LED_CONFS                                 */
         /************************************************************************/
-        static HarpDataFrame CreateHarpFrameForLeds(bool toEnable, int ledNumber)
+        static HarpMessage CreateHarpFrameForLeds(bool toEnable, int ledNumber)
         {
             if (toEnable)
-                return HarpDataFrame.UpdateChesksum(new HarpDataFrame(2, 5, 44, 255, (byte)HarpType.U8, (byte)(1 << ledNumber), 0));
+                return new HarpMessage(true, 2, 5, 44, 255, (byte)PayloadType.U8, (byte)(1 << ledNumber), 0);
             else
-                return HarpDataFrame.UpdateChesksum(new HarpDataFrame(2, 5, 45, 255, (byte)HarpType.U8, (byte)(1 << ledNumber), 0));
+                return new HarpMessage(true, 2, 5, 45, 255, (byte)PayloadType.U8, (byte)(1 << ledNumber), 0);
         }
-        static HarpDataFrame ProcessLedConfig0(bool input) { return CreateHarpFrameForLeds(input, 0); }
-        static HarpDataFrame ProcessLedConfig1(bool input) { return CreateHarpFrameForLeds(input, 1); }
-        static HarpDataFrame ProcessLedConfig2(bool input) { return CreateHarpFrameForLeds(input, 2); }
-        static HarpDataFrame ProcessLedConfig3(bool input) { return CreateHarpFrameForLeds(input, 3); }
-        static HarpDataFrame ProcessLedConfig4(bool input) { return CreateHarpFrameForLeds(input, 4); }
-        static HarpDataFrame ProcessLedConfig5(bool input) { return CreateHarpFrameForLeds(input, 5); }
-        static HarpDataFrame ProcessLedConfig6(bool input) { return CreateHarpFrameForLeds(input, 6); }
-        static HarpDataFrame ProcessLedConfig7(bool input) { return CreateHarpFrameForLeds(input, 7); }
+        static HarpMessage ProcessLedConfig0(bool input) { return CreateHarpFrameForLeds(input, 0); }
+        static HarpMessage ProcessLedConfig1(bool input) { return CreateHarpFrameForLeds(input, 1); }
+        static HarpMessage ProcessLedConfig2(bool input) { return CreateHarpFrameForLeds(input, 2); }
+        static HarpMessage ProcessLedConfig3(bool input) { return CreateHarpFrameForLeds(input, 3); }
+        static HarpMessage ProcessLedConfig4(bool input) { return CreateHarpFrameForLeds(input, 4); }
+        static HarpMessage ProcessLedConfig5(bool input) { return CreateHarpFrameForLeds(input, 5); }
+        static HarpMessage ProcessLedConfig6(bool input) { return CreateHarpFrameForLeds(input, 6); }
+        static HarpMessage ProcessLedConfig7(bool input) { return CreateHarpFrameForLeds(input, 7); }
 
-        static HarpDataFrame ProcessLedConfigsSet(byte input)
+        static HarpMessage ProcessLedConfigsSet(byte input)
         {
-            return HarpDataFrame.UpdateChesksum(new HarpDataFrame(2, 5, 44, 255, (byte)HarpType.U8, input, 0));
+            return new HarpMessage(true, 2, 5, 44, 255, (byte)PayloadType.U8, input, 0);
         }
-        static HarpDataFrame ProcessLedConfigsClear(byte input)
+        static HarpMessage ProcessLedConfigsClear(byte input)
         {
-            return HarpDataFrame.UpdateChesksum(new HarpDataFrame(2, 5, 45, 255, (byte)HarpType.U8, input, 0));
+            return new HarpMessage(true, 2, 5, 45, 255, (byte)PayloadType.U8, input, 0);
         }
 
 
         /************************************************************************/
         /* Register: LEDS                                                       */
         /************************************************************************/
-        static HarpDataFrame ProcessColorsOfLeds(byte [] RGBs)
+        static HarpMessage ProcessColorsOfLeds(byte [] RGBs)
         {
-            return HarpDataFrame.UpdateChesksum(new HarpDataFrame(2, 13, 46, 255, (byte)HarpType.U8, RGBs[0], RGBs[1], RGBs[2], RGBs[3], RGBs[4], RGBs[5], RGBs[6], RGBs[7], RGBs[8], 0));
+            return new HarpMessage(true, 2, 13, 46, 255, (byte)PayloadType.U8, RGBs[0], RGBs[1], RGBs[2], RGBs[3], RGBs[4], RGBs[5], RGBs[6], RGBs[7], RGBs[8], 0);
         }
     }
 }
