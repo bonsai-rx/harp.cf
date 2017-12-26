@@ -80,38 +80,38 @@ namespace Bonsai.Harp.CF
             }
         }
 
-        static bool is_evt39(HarpDataFrame input) { return ((input.Address == 39) && (input.Error == false) && (input.Id == MessageId.Event)); }
-        static bool is_evt40(HarpDataFrame input) { return ((input.Address == 40) && (input.Error == false) && (input.Id == MessageId.Event)); }
-        static bool is_evt41(HarpDataFrame input) { return ((input.Address == 41) && (input.Error == false) && (input.Id == MessageId.Event)); }
-        static bool is_evt42(HarpDataFrame input) { return ((input.Address == 42) && (input.Error == false) && (input.Id == MessageId.Event)); }
-        static bool is_evt43(HarpDataFrame input) { return ((input.Address == 43) && (input.Error == false) && (input.Id == MessageId.Event)); }
+        static bool is_evt39(HarpMessage input) { return ((input.Address == 39) && (input.Error == false) && (input.MessageType == MessageType.Event)); }
+        static bool is_evt40(HarpMessage input) { return ((input.Address == 40) && (input.Error == false) && (input.MessageType == MessageType.Event)); }
+        static bool is_evt41(HarpMessage input) { return ((input.Address == 41) && (input.Error == false) && (input.MessageType == MessageType.Event)); }
+        static bool is_evt42(HarpMessage input) { return ((input.Address == 42) && (input.Error == false) && (input.MessageType == MessageType.Event)); }
+        static bool is_evt43(HarpMessage input) { return ((input.Address == 43) && (input.Error == false) && (input.MessageType == MessageType.Event)); }
                 
         /************************************************************************/
         /* Register: INPUT0                                                     */
         /************************************************************************/
-        static IObservable<bool> ProcessInputs0(IObservable<HarpDataFrame> source)
+        static IObservable<bool> ProcessInputs0(IObservable<HarpMessage> source)
         {
-            return source.Where(is_evt39).Select(input => { return ((input.Message[11] & (1 << 0)) == (1 << 0)) ? true : false; });
+            return source.Where(is_evt39).Select(input => { return ((input.MessageBytes[11] & (1 << 0)) == (1 << 0)) ? true : false; });
         }
 
         /************************************************************************/
         /* Register: CAM0, CAM1, SYNC0 and SYNC1                                */
         /************************************************************************/
-        static IObservable<bool> ProcessTrig0(IObservable<HarpDataFrame> source)
+        static IObservable<bool> ProcessTrig0(IObservable<HarpMessage> source)
         {
-            return source.Where(is_evt40).Select(input => { return ((input.Message[11] & (1 << 0)) == (1 << 0)) ? true : false; });
+            return source.Where(is_evt40).Select(input => { return ((input.MessageBytes[11] & (1 << 0)) == (1 << 0)) ? true : false; });
         }
-        static IObservable<bool> ProcessSync0(IObservable<HarpDataFrame> source)
+        static IObservable<bool> ProcessSync0(IObservable<HarpMessage> source)
         {
-            return source.Where(is_evt42).Select(input => { return ((input.Message[11] & (1 << 0)) == (1 << 0)) ? true : false; });
+            return source.Where(is_evt42).Select(input => { return ((input.MessageBytes[11] & (1 << 0)) == (1 << 0)) ? true : false; });
         }
-        static IObservable<bool> ProcessTrig1(IObservable<HarpDataFrame> source)
+        static IObservable<bool> ProcessTrig1(IObservable<HarpMessage> source)
         {
-            return source.Where(is_evt41).Select(input => { return ((input.Message[11] & (1 << 0)) == (1 << 0)) ? true : false; });
+            return source.Where(is_evt41).Select(input => { return ((input.MessageBytes[11] & (1 << 0)) == (1 << 0)) ? true : false; });
         }
-        static IObservable<bool> ProcessSync1(IObservable<HarpDataFrame> source)
+        static IObservable<bool> ProcessSync1(IObservable<HarpMessage> source)
         {
-            return source.Where(is_evt43).Select(input => { return ((input.Message[11] & (1 << 0)) == (1 << 0)) ? true : false; });
+            return source.Where(is_evt43).Select(input => { return ((input.MessageBytes[11] & (1 << 0)) == (1 << 0)) ? true : false; });
         }
     }
 }

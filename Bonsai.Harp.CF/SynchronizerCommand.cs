@@ -48,9 +48,9 @@ namespace Bonsai.Harp.CF
             return expression;
         }
 
-        static HarpDataFrame ProcessOutputs(byte input)
+        static HarpMessage ProcessOutputs(byte input)
         {
-            return HarpDataFrame.UpdateChesksum(new HarpDataFrame(2, 5, 33, 255, (byte)HarpType.U8, input, 0));
+            return new HarpMessage(true, 2, 5, 33, 255, (byte)PayloadType.U8, input, 0);
         }
     }
 }

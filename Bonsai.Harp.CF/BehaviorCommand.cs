@@ -11,7 +11,7 @@ using System.ComponentModel;
 namespace Bonsai.Harp.CF
 {
     [Flags]
-    public enum BehaviorPorts : UInt16
+    public enum BehaviorPorts : ushort
     {
         PokeLed0 = 1,
         PokeLed1 = 2,
@@ -174,38 +174,38 @@ namespace Bonsai.Harp.CF
             return Expression.Convert(Expression.Constant(Mask), typeof(int));
         }
         
-        static HarpDataFrame createFrameU8(byte registerAddress, int content)
+        static HarpMessage createFrameU8(byte registerAddress, int content)
         {
-            return HarpDataFrame.UpdateChesksum(new HarpDataFrame(2, 5, registerAddress, 255, (byte)HarpType.U8, (byte)content, 0));
+            return new HarpMessage(true, 2, 5, registerAddress, 255, (byte)PayloadType.U8, (byte)content, 0);
         }
-        static HarpDataFrame createFrameU16(byte registerAddress, int content)
+        static HarpMessage createFrameU16(byte registerAddress, int content)
         {
-            return HarpDataFrame.UpdateChesksum(new HarpDataFrame(2, 6, registerAddress, 255, (byte)HarpType.U16, (byte)(content & 255), (byte)((content >> 8) & 255), 0));
+            return new HarpMessage(true, 2, 6, registerAddress, 255, (byte)PayloadType.U16, (byte)(content & 255), (byte)((content >> 8) & 255), 0);
         }
 
 
         /************************************************************************/
         /* Outputs                                                              */
         /************************************************************************/
-        static HarpDataFrame ProcessSetOutput<TSource>(TSource input, int bMask)            { return createFrameU16(34, bMask); }
-        static HarpDataFrame ProcessClearOutput<TSource>(TSource input, int bMask)          { return createFrameU16(35, bMask); }
-        static HarpDataFrame ProcessToggleOutput<TSource>(TSource input, int bMask)         { return createFrameU16(36, bMask); }
+        static HarpMessage ProcessSetOutput<TSource>(TSource input, int bMask)            { return createFrameU16(34, bMask); }
+        static HarpMessage ProcessClearOutput<TSource>(TSource input, int bMask)          { return createFrameU16(35, bMask); }
+        static HarpMessage ProcessToggleOutput<TSource>(TSource input, int bMask)         { return createFrameU16(36, bMask); }
 
-        static HarpDataFrame ProcessRegisterSetOutput(UInt16 input)                         { return createFrameU16(34, input); }
-        static HarpDataFrame ProcessRegisterClearOutput(UInt16 input)                       { return createFrameU16(35, input); }
-        static HarpDataFrame ProcessRegisterToggleOutput(UInt16 input)                      { return createFrameU16(36, input); }
+        static HarpMessage ProcessRegisterSetOutput(UInt16 input)                         { return createFrameU16(34, input); }
+        static HarpMessage ProcessRegisterClearOutput(UInt16 input)                       { return createFrameU16(35, input); }
+        static HarpMessage ProcessRegisterToggleOutput(UInt16 input)                      { return createFrameU16(36, input); }
 
         /************************************************************************/
         /* Pwm                                                                  */
         /************************************************************************/
-        static HarpDataFrame ProcessStartPwm<TSource>(TSource input, int bMask)
+        static HarpMessage ProcessStartPwm<TSource>(TSource input, int bMask)
         {
             if (bMask < 1024 || bMask > 15360)
                 throw new InvalidOperationException("Invalid Mask selection. Only Digital0, Digital1, Digital2 and/or Digital3 can be selected.");
 
             return createFrameU8(81, bMask);
         }
-        static HarpDataFrame ProcessStopPwm<TSource>(TSource input, int bMask)
+        static HarpMessage ProcessStopPwm<TSource>(TSource input, int bMask)
         {
             if (bMask < 1024 || bMask > 15360)
                 throw new InvalidOperationException("Invalid Mask selection. Only Digital0, Digital1, Digital2 and/or Digital3 can be selected.");
@@ -213,7 +213,7 @@ namespace Bonsai.Harp.CF
             return createFrameU8(82, bMask);
         }
 
-        static HarpDataFrame ProcessWritePwmFrequency(UInt16 input, int bMask)
+        static HarpMessage ProcessWritePwmFrequency(UInt16 input, int bMask)
         {
             switch (bMask)
             {
@@ -226,13 +226,13 @@ namespace Bonsai.Harp.CF
             }
         }
 
-        static HarpDataFrame ProcessRegisterStartPwm(byte input)                          { return createFrameU16(81, input); }
-        static HarpDataFrame ProcessRegisterStopPwm(byte input)                           { return createFrameU16(82, input); }
+        static HarpMessage ProcessRegisterStartPwm(byte input)                          { return createFrameU16(81, input); }
+        static HarpMessage ProcessRegisterStopPwm(byte input)                           { return createFrameU16(82, input); }
 
         /************************************************************************/
         /* Led                                                                  */
         /************************************************************************/
-        static HarpDataFrame ProcessWriteLedCurrent(byte input, int bMask)
+        static HarpMessage ProcessWriteLedCurrent(byte input, int bMask)
         {
             switch (bMask)
             {
@@ -246,7 +246,7 @@ namespace Bonsai.Harp.CF
         /************************************************************************/
         /* Pulse Period                                                         */
         /************************************************************************/
-        static HarpDataFrame ProcessWritePulsePeriod(UInt16 input, int bMask)
+        static HarpMessage ProcessWritePulsePeriod(UInt16 input, int bMask)
         {
             switch (bMask)
             {
@@ -272,22 +272,22 @@ namespace Bonsai.Harp.CF
         /************************************************************************/
         /* RGbs                                                                 */
         /************************************************************************/
-        static HarpDataFrame ProcessWriteColorsRgb(byte[] RGBs, int bMask)
+        static HarpMessage ProcessWriteColorsRgb(byte[] RGBs, int bMask)
         {
             switch (bMask)
             {
                 case (UInt16)BehaviorPorts.Rgb0:
-                    return HarpDataFrame.UpdateChesksum(new HarpDataFrame(2, 7, 84, 255, (byte)HarpType.U8, RGBs[0], RGBs[1], RGBs[2], 0));
+                    return new HarpMessage(true, 2, 7, 84, 255, (byte)PayloadType.U8, RGBs[0], RGBs[1], RGBs[2], 0);
                 case (UInt16)BehaviorPorts.Rgb1:
-                    return HarpDataFrame.UpdateChesksum(new HarpDataFrame(2, 7, 85, 255, (byte)HarpType.U8, RGBs[0], RGBs[1], RGBs[2], 0));
+                    return new HarpMessage(true, 2, 7, 85, 255, (byte)PayloadType.U8, RGBs[0], RGBs[1], RGBs[2], 0);
                 default:
                     throw new InvalidOperationException("Invalid Mask selection. Only Rgb0 or Rgb1 can be selected.");
             }
         }
 
-        static HarpDataFrame ProcessWriteColorsRgbs(byte [] RGBs)
+        static HarpMessage ProcessWriteColorsRgbs(byte [] RGBs)
         {
-            return HarpDataFrame.UpdateChesksum(new HarpDataFrame(2, 83, 46, 255, (byte)HarpType.U8, RGBs[0], RGBs[1], RGBs[2], RGBs[3], RGBs[4], RGBs[5], 0));
+            return new HarpMessage(true, 2, 83, 46, 255, (byte)PayloadType.U8, RGBs[0], RGBs[1], RGBs[2], RGBs[3], RGBs[4], RGBs[5], 0);
         }
     }
 }

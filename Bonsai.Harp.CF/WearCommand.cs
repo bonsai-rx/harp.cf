@@ -80,41 +80,41 @@ namespace Bonsai.Harp.CF
             return expression;
         }
 
-        static HarpDataFrame ProcessStartAcquisition<TSource>(TSource input)
+        static HarpMessage ProcessStartAcquisition<TSource>(TSource input)
         {
-            return HarpDataFrame.UpdateChesksum(new HarpDataFrame(2, 5, 32, 255, (byte)HarpType.U8, 1, 0));
+            return new HarpMessage(true, 2, 5, 32, 255, (byte)PayloadType.U8, 1, 0);
         }
 
-        static HarpDataFrame ProcessStopAcquisition<TSource>(TSource input)
+        static HarpMessage ProcessStopAcquisition<TSource>(TSource input)
         {
-            return HarpDataFrame.UpdateChesksum(new HarpDataFrame(2, 5, 32, 255, (byte)HarpType.U8, 0, 0));
+            return new HarpMessage(true, 2, 5, 32, 255, (byte)PayloadType.U8, 0, 0);
         }
 
-        static HarpDataFrame ProcessStartStimulation<TSource>(TSource input)
+        static HarpMessage ProcessStartStimulation<TSource>(TSource input)
         {
-            return HarpDataFrame.UpdateChesksum(new HarpDataFrame(2, 5, 33, 255, (byte)HarpType.U8, 1, 0));
-        }
-
-
-        static HarpDataFrame ProcessPositionMotor0(UInt16 input)
-        {
-            return HarpDataFrame.UpdateChesksum(new HarpDataFrame(2, 6, 80, 255, (byte)HarpType.U16, (byte)(input & 255), (byte)((input >> 8) & 255), 0));
-        }
-
-        static HarpDataFrame ProcessPositionMotor1(UInt16 input)
-        {
-            return HarpDataFrame.UpdateChesksum(new HarpDataFrame(2, 6, 85, 255, (byte)HarpType.U16, (byte)(input & 255), (byte)((input >> 8) & 255), 0));
+            return new HarpMessage(true, 2, 5, 33, 255, (byte)PayloadType.U8, 1, 0);
         }
 
 
-        static HarpDataFrame ProcessOutput0(bool input)
+        static HarpMessage ProcessPositionMotor0(UInt16 input)
         {
-            return HarpDataFrame.UpdateChesksum(new HarpDataFrame(2, 5, 38, 255, (byte)HarpType.U8, (byte)(input ? 1 : 0), 0));
+            return new HarpMessage(true, 2, 6, 80, 255, (byte)PayloadType.U16, (byte)(input & 255), (byte)((input >> 8) & 255), 0);
         }
 
-        static HarpDataFrame ProcessOutput1(bool input)
+        static HarpMessage ProcessPositionMotor1(UInt16 input)
         {
-            return HarpDataFrame.UpdateChesksum(new HarpDataFrame(2, 5, 39, 255, (byte)HarpType.U8, (byte)(input ? 1 : 0), 0));
+            return new HarpMessage(true, 2, 6, 85, 255, (byte)PayloadType.U16, (byte)(input & 255), (byte)((input >> 8) & 255), 0);
+        }
+
+
+        static HarpMessage ProcessOutput0(bool input)
+        {
+            return new HarpMessage(true, 2, 5, 38, 255, (byte)PayloadType.U8, (byte)(input ? 1 : 0), 0);
+        }
+
+        static HarpMessage ProcessOutput1(bool input)
+        {
+            return new HarpMessage(true, 2, 5, 39, 255, (byte)PayloadType.U8, (byte)(input ? 1 : 0), 0);
         }
     }
 }
