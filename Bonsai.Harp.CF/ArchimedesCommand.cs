@@ -10,7 +10,7 @@ using System.ComponentModel;
 
 namespace Bonsai.Harp.CF
 {
-    public enum ArquimedesCommandType : byte
+    public enum ArchimedesCommandType : byte
     {
         LoadPosition,
 
@@ -74,19 +74,19 @@ namespace Bonsai.Harp.CF
         "ColorsOfLeds: Positive integer array[9] (G,R,B,G,R,B,G,R,B)\n"
     )]
 
-    public class ArquimedesCommand : SelectBuilder, INamedElement
+    public class ArchimedesCommand : SelectBuilder, INamedElement
     {
-        public ArquimedesCommand()
+        public ArchimedesCommand()
         {
-            Type = ArquimedesCommandType.LoadPosition;
+            Type = ArchimedesCommandType.LoadPosition;
         }
 
         string INamedElement.Name
         {
-            get { return typeof(ArquimedesCommand).Name.Replace("Command", string.Empty) + "." + Type.ToString(); }
+            get { return typeof(ArchimedesCommand).Name.Replace("Command", string.Empty) + "." + Type.ToString(); }
         }
 
-        public ArquimedesCommandType Type { get; set; }
+        public ArchimedesCommandType Type { get; set; }
 
         protected override Expression BuildSelector(Expression expression)
         {
@@ -95,92 +95,92 @@ namespace Bonsai.Harp.CF
                 /************************************************************************/
                 /* Register: POS_TARGET                                                 */
                 /************************************************************************/
-                case ArquimedesCommandType.LoadPosition:
+                case ArchimedesCommandType.LoadPosition:
                     if (expression.Type != typeof(UInt16)) { expression = Expression.Convert(expression, typeof(UInt16)); }
-                    return Expression.Call(typeof(ArquimedesCommand), "ProcessLoadPosition", null, expression);
+                    return Expression.Call(typeof(ArchimedesCommand), "ProcessLoadPosition", null, expression);
 
                 /************************************************************************/
                 /* Registers: RESET_ANGLE, RESET_MOTOR, HIDE_LEVER                      */
                 /************************************************************************/
-                case ArquimedesCommandType.ResetLeverAngle:
-                    return Expression.Call(typeof(ArquimedesCommand), "ProcessResetLeverAngle", new[] { expression.Type }, expression);
-                case ArquimedesCommandType.ResetLoadPosition:
-                    return Expression.Call(typeof(ArquimedesCommand), "ProcessResetLoadPosition", new[] { expression.Type }, expression);
-                case ArquimedesCommandType.HideLever:
-                    return Expression.Call(typeof(ArquimedesCommand), "ProcessHideLever", new[] { expression.Type }, expression);
-                case ArquimedesCommandType.UnhideLever:
-                    return Expression.Call(typeof(ArquimedesCommand), "ProcessUnhideLever", new[] { expression.Type }, expression);
+                case ArchimedesCommandType.ResetLeverAngle:
+                    return Expression.Call(typeof(ArchimedesCommand), "ProcessResetLeverAngle", new[] { expression.Type }, expression);
+                case ArchimedesCommandType.ResetLoadPosition:
+                    return Expression.Call(typeof(ArchimedesCommand), "ProcessResetLoadPosition", new[] { expression.Type }, expression);
+                case ArchimedesCommandType.HideLever:
+                    return Expression.Call(typeof(ArchimedesCommand), "ProcessHideLever", new[] { expression.Type }, expression);
+                case ArchimedesCommandType.UnhideLever:
+                    return Expression.Call(typeof(ArchimedesCommand), "ProcessUnhideLever", new[] { expression.Type }, expression);
 
                 /************************************************************************/
                 /* Registers: SET_DOUTS, CLR_DOUTS                                      */
                 /************************************************************************/
-                case ArquimedesCommandType.DigitalOutput0:
+                case ArchimedesCommandType.DigitalOutput0:
                     if (expression.Type != typeof(bool)) { expression = Expression.Convert(expression, typeof(bool)); }
-                    return Expression.Call(typeof(ArquimedesCommand), "ProcessDigitalOutput0", null, expression);
-                case ArquimedesCommandType.DigitalOutput1:
+                    return Expression.Call(typeof(ArchimedesCommand), "ProcessDigitalOutput0", null, expression);
+                case ArchimedesCommandType.DigitalOutput1:
                     if (expression.Type != typeof(bool)) { expression = Expression.Convert(expression, typeof(bool)); }
-                    return Expression.Call(typeof(ArquimedesCommand), "ProcessDigitalOutput1", null, expression);
-                case ArquimedesCommandType.DigitalOutput2:
+                    return Expression.Call(typeof(ArchimedesCommand), "ProcessDigitalOutput1", null, expression);
+                case ArchimedesCommandType.DigitalOutput2:
                     if (expression.Type != typeof(bool)) { expression = Expression.Convert(expression, typeof(bool)); }
-                    return Expression.Call(typeof(ArquimedesCommand), "ProcessDigitalOutput2", null, expression);
-                case ArquimedesCommandType.DigitalOutput3:
+                    return Expression.Call(typeof(ArchimedesCommand), "ProcessDigitalOutput2", null, expression);
+                case ArchimedesCommandType.DigitalOutput3:
                     if (expression.Type != typeof(bool)) { expression = Expression.Convert(expression, typeof(bool)); }
-                    return Expression.Call(typeof(ArquimedesCommand), "ProcessDigitalOutput3", null, expression);
-                case ArquimedesCommandType.DigitalOutput4:
+                    return Expression.Call(typeof(ArchimedesCommand), "ProcessDigitalOutput3", null, expression);
+                case ArchimedesCommandType.DigitalOutput4:
                     if (expression.Type != typeof(bool)) { expression = Expression.Convert(expression, typeof(bool)); }
-                    return Expression.Call(typeof(ArquimedesCommand), "ProcessDigitalOutput4", null, expression);
-                case ArquimedesCommandType.DigitalOutput5:
+                    return Expression.Call(typeof(ArchimedesCommand), "ProcessDigitalOutput4", null, expression);
+                case ArchimedesCommandType.DigitalOutput5:
                     if (expression.Type != typeof(bool)) { expression = Expression.Convert(expression, typeof(bool)); }
-                    return Expression.Call(typeof(ArquimedesCommand), "ProcessDigitalOutput5", null, expression);
+                    return Expression.Call(typeof(ArchimedesCommand), "ProcessDigitalOutput5", null, expression);
 
-                case ArquimedesCommandType.DigitalOutputsSet:
+                case ArchimedesCommandType.DigitalOutputsSet:
                     if (expression.Type != typeof(byte)) { expression = Expression.Convert(expression, typeof(byte)); }
-                    return Expression.Call(typeof(ArquimedesCommand), "ProcessDigitalOutputsSet", null, expression);
-                case ArquimedesCommandType.DigitalOutputsClear:
+                    return Expression.Call(typeof(ArchimedesCommand), "ProcessDigitalOutputsSet", null, expression);
+                case ArchimedesCommandType.DigitalOutputsClear:
                     if (expression.Type != typeof(byte)) { expression = Expression.Convert(expression, typeof(byte)); }
-                    return Expression.Call(typeof(ArquimedesCommand), "ProcessDigitalOutputsClear", null, expression);
+                    return Expression.Call(typeof(ArchimedesCommand), "ProcessDigitalOutputsClear", null, expression);
 
                 /************************************************************************/
                 /* Registers: EN_LED_CONFS, DIS_LED_CONFS                               */
                 /************************************************************************/
-                case ArquimedesCommandType.LedConfig0:
+                case ArchimedesCommandType.LedConfig0:
                     if (expression.Type != typeof(bool)) { expression = Expression.Convert(expression, typeof(bool)); }
-                    return Expression.Call(typeof(ArquimedesCommand), "ProcessLedConfig0", null, expression);
-                case ArquimedesCommandType.LedConfig1:
+                    return Expression.Call(typeof(ArchimedesCommand), "ProcessLedConfig0", null, expression);
+                case ArchimedesCommandType.LedConfig1:
                     if (expression.Type != typeof(bool)) { expression = Expression.Convert(expression, typeof(bool)); }
-                    return Expression.Call(typeof(ArquimedesCommand), "ProcessLedConfig1", null, expression);
-                case ArquimedesCommandType.LedConfig2:
+                    return Expression.Call(typeof(ArchimedesCommand), "ProcessLedConfig1", null, expression);
+                case ArchimedesCommandType.LedConfig2:
                     if (expression.Type != typeof(bool)) { expression = Expression.Convert(expression, typeof(bool)); }
-                    return Expression.Call(typeof(ArquimedesCommand), "ProcessLedConfig2", null, expression);
-                case ArquimedesCommandType.LedConfig3:
+                    return Expression.Call(typeof(ArchimedesCommand), "ProcessLedConfig2", null, expression);
+                case ArchimedesCommandType.LedConfig3:
                     if (expression.Type != typeof(bool)) { expression = Expression.Convert(expression, typeof(bool)); }
-                    return Expression.Call(typeof(ArquimedesCommand), "ProcessLedConfig3", null, expression);
-                case ArquimedesCommandType.LedConfig4:
+                    return Expression.Call(typeof(ArchimedesCommand), "ProcessLedConfig3", null, expression);
+                case ArchimedesCommandType.LedConfig4:
                     if (expression.Type != typeof(bool)) { expression = Expression.Convert(expression, typeof(bool)); }
-                    return Expression.Call(typeof(ArquimedesCommand), "ProcessLedConfig4", null, expression);
-                case ArquimedesCommandType.LedConfig5:
+                    return Expression.Call(typeof(ArchimedesCommand), "ProcessLedConfig4", null, expression);
+                case ArchimedesCommandType.LedConfig5:
                     if (expression.Type != typeof(bool)) { expression = Expression.Convert(expression, typeof(bool)); }
-                    return Expression.Call(typeof(ArquimedesCommand), "ProcessLedConfig5", null, expression);
-                case ArquimedesCommandType.LedConfig6:
+                    return Expression.Call(typeof(ArchimedesCommand), "ProcessLedConfig5", null, expression);
+                case ArchimedesCommandType.LedConfig6:
                     if (expression.Type != typeof(bool)) { expression = Expression.Convert(expression, typeof(bool)); }
-                    return Expression.Call(typeof(ArquimedesCommand), "ProcessLedConfig6", null, expression);
-                case ArquimedesCommandType.LedConfig7:
+                    return Expression.Call(typeof(ArchimedesCommand), "ProcessLedConfig6", null, expression);
+                case ArchimedesCommandType.LedConfig7:
                     if (expression.Type != typeof(bool)) { expression = Expression.Convert(expression, typeof(bool)); }
-                    return Expression.Call(typeof(ArquimedesCommand), "ProcessLedConfig7", null, expression);
+                    return Expression.Call(typeof(ArchimedesCommand), "ProcessLedConfig7", null, expression);
 
-                case ArquimedesCommandType.LedConfigsSet:
+                case ArchimedesCommandType.LedConfigsSet:
                     if (expression.Type != typeof(byte)) { expression = Expression.Convert(expression, typeof(byte)); }
-                    return Expression.Call(typeof(ArquimedesCommand), "ProcessLedConfigsSet", null, expression);
-                case ArquimedesCommandType.LedConfigsClear:
+                    return Expression.Call(typeof(ArchimedesCommand), "ProcessLedConfigsSet", null, expression);
+                case ArchimedesCommandType.LedConfigsClear:
                     if (expression.Type != typeof(byte)) { expression = Expression.Convert(expression, typeof(byte)); }
-                    return Expression.Call(typeof(ArquimedesCommand), "ProcessLedConfigsClear", null, expression);
+                    return Expression.Call(typeof(ArchimedesCommand), "ProcessLedConfigsClear", null, expression);
 
                 /************************************************************************/
                 /* Register: LEDS                                                       */
                 /************************************************************************/
-                case ArquimedesCommandType.ColorsOfLeds:
+                case ArchimedesCommandType.ColorsOfLeds:
                     if (expression.Type != typeof(byte[])) { expression = Expression.Convert(expression, typeof(byte[])); }
-                    return Expression.Call(typeof(ArquimedesCommand), "ProcessColorsOfLeds", null, expression);
+                    return Expression.Call(typeof(ArchimedesCommand), "ProcessColorsOfLeds", null, expression);
 
                 default:
                     break;

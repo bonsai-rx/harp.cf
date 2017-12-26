@@ -12,7 +12,7 @@ using System.ComponentModel;
 
 namespace Bonsai.Harp.CF
 {
-    public enum ArquimedesEventType : byte
+    public enum ArchimedesEventType : byte
     {
         /* Event: DATA */
         Lever = 0,
@@ -68,25 +68,19 @@ namespace Bonsai.Harp.CF
         "(*) Only distinct contiguous elements are propagated."
     )]
 
-    public class ArquimedesEvent : SingleArgumentExpressionBuilder, INamedElement
+    public class ArchimedesEvent : SingleArgumentExpressionBuilder, INamedElement
     {
-        public ArquimedesEvent()
+        public ArchimedesEvent()
         {
-            Type = ArquimedesEventType.Lever;
+            Type = ArchimedesEventType.Lever;
         }
 
         string INamedElement.Name
         {
-            get { return typeof(ArquimedesEvent).Name.Replace("Event", string.Empty) + "." + Type.ToString(); }
+            get { return typeof(ArchimedesEvent).Name.Replace("Event", string.Empty) + "." + Type.ToString(); }
         }
 
-        public ArquimedesEventType Type { get; set; }
-
-        private static byte previousThresholdsQuiet = 0;
-        private static byte previousThresholdsTh0 = 0;
-        private static byte previousThresholdsTh1 = 0;
-        private static byte previousThresholdsTh2 = 0;
-        private static byte previousThresholdsTh3 = 0;
+        public ArchimedesEventType Type { get; set; }
 
         private static bool REG_MOTOR_MAXIMUM_available = false;
         private static UInt16 REG_MOTOR_MAXIMUM = 3000;
@@ -99,58 +93,58 @@ namespace Bonsai.Harp.CF
                 /************************************************************************/
                 /* Register: DATA                                                        */
                 /************************************************************************/
-                case ArquimedesEventType.Lever:
-                    return Expression.Call(typeof(ArquimedesEvent), "ProcessLever", null, expression);
-                case ArquimedesEventType.AnalogInput:
-                    return Expression.Call(typeof(ArquimedesEvent), "ProcessAnalogInput", null, expression);
+                case ArchimedesEventType.Lever:
+                    return Expression.Call(typeof(ArchimedesEvent), "ProcessLever", null, expression);
+                case ArchimedesEventType.AnalogInput:
+                    return Expression.Call(typeof(ArchimedesEvent), "ProcessAnalogInput", null, expression);
 
-                case ArquimedesEventType.RegisterLever:
-                    return Expression.Call(typeof(ArquimedesEvent), "ProcessRegisterLever", null, expression);
-                case ArquimedesEventType.RegisterAnalogInput:
-                    return Expression.Call(typeof(ArquimedesEvent), "ProcessRegisterAnalogInput", null, expression);
+                case ArchimedesEventType.RegisterLever:
+                    return Expression.Call(typeof(ArchimedesEvent), "ProcessRegisterLever", null, expression);
+                case ArchimedesEventType.RegisterAnalogInput:
+                    return Expression.Call(typeof(ArchimedesEvent), "ProcessRegisterAnalogInput", null, expression);
 
                 /************************************************************************/
                 /* Register: THRESHOLDS                                                 */
                 /************************************************************************/
-                case ArquimedesEventType.Thresholds:
-                    return Expression.Call(typeof(ArquimedesEvent), "ProcessThresholds", null, expression);
+                case ArchimedesEventType.Thresholds:
+                    return Expression.Call(typeof(ArchimedesEvent), "ProcessThresholds", null, expression);
 
-                case ArquimedesEventType.LeverIsQuiet:
-                    return Expression.Call(typeof(ArquimedesEvent), "ProcessLeverIsQuiet", null, expression);
-                case ArquimedesEventType.Threshold0:
-                    return Expression.Call(typeof(ArquimedesEvent), "ProcessThreshold0", null, expression);
-                case ArquimedesEventType.Threshold1:
-                    return Expression.Call(typeof(ArquimedesEvent), "ProcessThreshold1", null, expression);
-                case ArquimedesEventType.Threshold2:
-                    return Expression.Call(typeof(ArquimedesEvent), "ProcessThreshold2", null, expression);
-                case ArquimedesEventType.Threshold3:
-                    return Expression.Call(typeof(ArquimedesEvent), "ProcessThreshold3", null, expression);
+                case ArchimedesEventType.LeverIsQuiet:
+                    return Expression.Call(typeof(ArchimedesEvent), "ProcessLeverIsQuiet", null, expression);
+                case ArchimedesEventType.Threshold0:
+                    return Expression.Call(typeof(ArchimedesEvent), "ProcessThreshold0", null, expression);
+                case ArchimedesEventType.Threshold1:
+                    return Expression.Call(typeof(ArchimedesEvent), "ProcessThreshold1", null, expression);
+                case ArchimedesEventType.Threshold2:
+                    return Expression.Call(typeof(ArchimedesEvent), "ProcessThreshold2", null, expression);
+                case ArchimedesEventType.Threshold3:
+                    return Expression.Call(typeof(ArchimedesEvent), "ProcessThreshold3", null, expression);
 
-                case ArquimedesEventType.RegisterThresholds:
-                    return Expression.Call(typeof(ArquimedesEvent), "ProcessRegisterThresholds", null, expression);
+                case ArchimedesEventType.RegisterThresholds:
+                    return Expression.Call(typeof(ArchimedesEvent), "ProcessRegisterThresholds", null, expression);
 
                 /************************************************************************/
                 /* Register: INPUTS                                                     */
                 /************************************************************************/
-                case ArquimedesEventType.Inputs:
-                    return Expression.Call(typeof(ArquimedesEvent), "ProcessInputs", null, expression);
-                case ArquimedesEventType.Input0:
-                    return Expression.Call(typeof(ArquimedesEvent), "ProcessInputs0", null, expression);
-                case ArquimedesEventType.Input1:
-                    return Expression.Call(typeof(ArquimedesEvent), "ProcessInputs1", null, expression);
-                case ArquimedesEventType.Input2:
-                    return Expression.Call(typeof(ArquimedesEvent), "ProcessInputs2", null, expression);
-                case ArquimedesEventType.Input3:
-                    return Expression.Call(typeof(ArquimedesEvent), "ProcessInputs3", null, expression);
+                case ArchimedesEventType.Inputs:
+                    return Expression.Call(typeof(ArchimedesEvent), "ProcessInputs", null, expression);
+                case ArchimedesEventType.Input0:
+                    return Expression.Call(typeof(ArchimedesEvent), "ProcessInputs0", null, expression);
+                case ArchimedesEventType.Input1:
+                    return Expression.Call(typeof(ArchimedesEvent), "ProcessInputs1", null, expression);
+                case ArchimedesEventType.Input2:
+                    return Expression.Call(typeof(ArchimedesEvent), "ProcessInputs2", null, expression);
+                case ArchimedesEventType.Input3:
+                    return Expression.Call(typeof(ArchimedesEvent), "ProcessInputs3", null, expression);
 
-                case ArquimedesEventType.RegisterInputs:
-                    return Expression.Call(typeof(ArquimedesEvent), "ProcessRegisterInputs", null, expression);
+                case ArchimedesEventType.RegisterInputs:
+                    return Expression.Call(typeof(ArchimedesEvent), "ProcessRegisterInputs", null, expression);
 
                 /************************************************************************/
                 /* Register: POS_CURRENT                                                */
                 /************************************************************************/
-                case ArquimedesEventType.RegisterLoadPosition:
-                    return Expression.Call(typeof(ArquimedesEvent), "ProcessRegisterLoadPosition", null, expression);
+                case ArchimedesEventType.RegisterLoadPosition:
+                    return Expression.Call(typeof(ArchimedesEvent), "ProcessRegisterLoadPosition", null, expression);
 
                 /************************************************************************/
                 /* Default                                                              */
