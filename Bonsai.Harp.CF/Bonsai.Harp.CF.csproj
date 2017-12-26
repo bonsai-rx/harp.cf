@@ -76,8 +76,6 @@
     <Compile Include="BehaviorEvent.cs" />
     <Compile Include="CameraEvent.cs" />
     <Compile Include="CameraCommand.cs" />
-    <Compile Include="DeviceEvent.cs" />
-    <Compile Include="DeviceCommand.cs" />
     <Compile Include="MultiPwmEvent.cs" />
     <Compile Include="MultiPwmCommand.cs" />
     <Compile Include="PyControlEvent.cs" />
