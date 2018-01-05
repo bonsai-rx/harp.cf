@@ -37,7 +37,7 @@ namespace Bonsai.Harp.CF
         "\n" +
         "AnalogInput: Decimal (V)\n" +
         "\n" +
-        "RegisterPokesIn: Groupmask U8\n" +
+        "RegisterPokesInput: Groupmask U8\n" +
         "RegisterAnalogInput: U16\n" +
         "\n" +
         "(*) Only distinct contiguous elements are propagated."

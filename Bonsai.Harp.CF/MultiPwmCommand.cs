@@ -17,15 +17,15 @@ namespace Bonsai.Harp.CF
         SetTrigger1,
         SetTrigger2,
         SetTrigger3,
-        TriggersSet,
+        SetTriggers,
 
         ClearTrigger0,
         ClearTrigger1,
         ClearTrigger2,
         ClearTrigger3,
-        TriggersClear,
+        ClearTriggers,
 
-        OutputsEnable
+        EnableOutputs
     }
 
     [Description(
@@ -34,15 +34,15 @@ namespace Bonsai.Harp.CF
         "SetTrigger1: Any\n" +
         "SetTrigger2: Any\n" +
         "SetTrigger3: Any\n" +
-        "TriggersSet: Bitmask\n" +      // Don't need to indicate it's a byte since the code makes the conversion
+        "SetTriggers: Bitmask\n" +      // Don't need to indicate it's a byte since the code makes the conversion
         "\n" +
         "ClearTrigger0: Any\n" +
         "ClearTrigger1: Any\n" +
         "ClearTrigger2: Any\n" +
         "ClearTrigger3: Any\n" +
-        "TriggersClear: Bitmask\n" +    // Don't need to indicate it's a byte since the code makes the conversion
+        "ClearTriggers: Bitmask\n" +    // Don't need to indicate it's a byte since the code makes the conversion
         "\n" +
-        "OutputsEnable: Bitmask\n"
+        "EnableOutputs: Bitmask\n"
     )]
 
     public class MultiPwmCommand : SelectBuilder, INamedElement
@@ -75,9 +75,9 @@ namespace Bonsai.Harp.CF
                 case MultiPwmCommandType.SetTrigger3:
                     return Expression.Call(typeof(MultiPwmCommand), "ProcessSetTrigger3", new[] { expression.Type }, expression);
 
-                case MultiPwmCommandType.TriggersSet:
+                case MultiPwmCommandType.SetTriggers:
                     if (expression.Type != typeof(byte)) { expression = Expression.Convert(expression, typeof(byte)); }     // If possible, convert to byte
-                    return Expression.Call(typeof(MultiPwmCommand), "ProcessTriggersSet", null, expression);
+                    return Expression.Call(typeof(MultiPwmCommand), "ProcessSetTriggers", null, expression);
 
                 /************************************************************************/
                 /* Register: STOP_PWM                                                   */
@@ -91,16 +91,16 @@ namespace Bonsai.Harp.CF
                 case MultiPwmCommandType.ClearTrigger3:
                     return Expression.Call(typeof(MultiPwmCommand), "ProcessClearTrigger3", new[] { expression.Type }, expression);
 
-                case MultiPwmCommandType.TriggersClear:
+                case MultiPwmCommandType.ClearTriggers:
                     if (expression.Type != typeof(byte)) { expression = Expression.Convert(expression, typeof(byte)); }     // If possible, convert to byte
-                    return Expression.Call(typeof(MultiPwmCommand), "ProcessTriggersClear", null, expression);
+                    return Expression.Call(typeof(MultiPwmCommand), "ProcessClearTriggers", null, expression);
 
                 /************************************************************************/
                 /* Register: CH_ENABLE                                                  */
                 /************************************************************************/
-                case MultiPwmCommandType.OutputsEnable:
+                case MultiPwmCommandType.EnableOutputs:
                     if (expression.Type != typeof(byte)) { expression = Expression.Convert(expression, typeof(byte)); }     // If possible, convert to byte
-                    return Expression.Call(typeof(MultiPwmCommand), "ProcessOutputsEnable", null, expression);
+                    return Expression.Call(typeof(MultiPwmCommand), "ProcessEnableOutputs", null, expression);
 
                 default:
                     break;
@@ -128,7 +128,7 @@ namespace Bonsai.Harp.CF
         {
             return new HarpMessage(true, 2, 5, 60, 255, (byte)PayloadType.U8, 8, 0);
         }
-        static HarpMessage ProcessTriggersSet(byte input)
+        static HarpMessage ProcessSetTriggers(byte input)
         {
             return new HarpMessage(true, 2, 5, 60, 255, (byte)PayloadType.U8, (byte)(input & 0x0F), 0);
         }
@@ -152,7 +152,7 @@ namespace Bonsai.Harp.CF
         {
             return new HarpMessage(true, 2, 5, 61, 255, (byte)PayloadType.U8, 8, 0);
         }
-        static HarpMessage ProcessTriggersClear(byte input)
+        static HarpMessage ProcessClearTriggers(byte input)
         {
             return new HarpMessage(true, 2, 5, 61, 255, (byte)PayloadType.U8, (byte)(input & 0x0F), 0);
         }
@@ -160,7 +160,7 @@ namespace Bonsai.Harp.CF
         /************************************************************************/
         /* Register: CH_ENABLE                                                  */
         /************************************************************************/
-        static HarpMessage ProcessOutputsEnable(byte input)
+        static HarpMessage ProcessEnableOutputs(byte input)
         {
             return new HarpMessage(true, 2, 5, 69, 255, (byte)PayloadType.U8, (byte)(input & 0x0F), 0);
         }

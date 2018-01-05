@@ -25,19 +25,19 @@ namespace Bonsai.Harp.CF
         DigitalOutput3,
         DigitalOutput4,
         DigitalOutput5,
-        DigitalOutputsSet,
-        DigitalOutputsClear,
+        SetDigitalOutputs,
+        ClearDigitalOutputs,
 
-        LedConfig0,
-        LedConfig1,
-        LedConfig2,
-        LedConfig3,
-        LedConfig4,
-        LedConfig5,
-        LedConfig6,
-        LedConfig7,
-        LedConfigsSet,
-        LedConfigsClear,
+        PresetLedConfig0,
+        PresetLedConfig1,
+        PresetLedConfig2,
+        PresetLedConfig3,
+        PresetLedConfig4,
+        PresetLedConfig5,
+        PresetLedConfig6,
+        PresetLedConfig7,
+        SetPresetLedConfigs,
+        ClearPresetLedConfigs,
 
         ColorsOfLeds
     }
@@ -46,7 +46,6 @@ namespace Bonsai.Harp.CF
         "\n" +
         "LoadPosition: Positive integer\n" +
         "\n" +
-        "ResetLeverAngle: Any\n" +
         "ResetLeverAngle: Any\n" +
         "HideLever: Boolean\n" +
         "UnhideLever: Boolean\n" +
@@ -57,19 +56,19 @@ namespace Bonsai.Harp.CF
         "DigitalOutput3: Boolean\n" +
         "DigitalOutput4: Boolean\n" +
         "DigitalOutput5: Boolean\n" +
-        "DigitalOutputsSet: Bitmask\n" +
-        "DigitalOutputsClear: Bitmask\n" +
+        "SetDigitalOutputs: Bitmask\n" +
+        "ClearDigitalOutputs: Bitmask\n" +
         "\n" +
-        "LedConfig0: Boolean\n" +
-        "LedConfig1: Boolean\n" +
-        "LedConfig2: Boolean\n" +
-        "LedConfig3: Boolean\n" +
-        "LedConfig4: Boolean\n" +
-        "LedConfig5: Boolean\n" +
-        "LedConfig6: Boolean\n" +
-        "LedConfig7: Boolean\n" +
-        "LedConfigsSet: Bitmask\n" +    // Don't need to indicate it's a byte since the code makes the conversion
-        "LedConfigsClear: Bitmask\n" +  // Don't need to indicate it's a byte since the code makes the conversion
+        "PresetLedConfig0: Boolean\n" +
+        "PresetLedConfig1: Boolean\n" +
+        "PresetLedConfig2: Boolean\n" +
+        "PresetLedConfig3: Boolean\n" +
+        "PresetLedConfig4: Boolean\n" +
+        "PresetLedConfig5: Boolean\n" +
+        "PresetLedConfig6: Boolean\n" +
+        "PresetLedConfig7: Boolean\n" +
+        "SetPresetLedConfigs: Bitmask\n" +    // Don't need to indicate it's a byte since the code makes the conversion
+        "ClearPresetLedConfigs: Bitmask\n" +  // Don't need to indicate it's a byte since the code makes the conversion
         "\n" +
         "ColorsOfLeds: Positive integer array[9] (G,R,B,G,R,B,G,R,B)\n"
     )]
@@ -133,47 +132,47 @@ namespace Bonsai.Harp.CF
                     if (expression.Type != typeof(bool)) { expression = Expression.Convert(expression, typeof(bool)); }
                     return Expression.Call(typeof(ArchimedesCommand), "ProcessDigitalOutput5", null, expression);
 
-                case ArchimedesCommandType.DigitalOutputsSet:
+                case ArchimedesCommandType.SetDigitalOutputs:
                     if (expression.Type != typeof(byte)) { expression = Expression.Convert(expression, typeof(byte)); }
-                    return Expression.Call(typeof(ArchimedesCommand), "ProcessDigitalOutputsSet", null, expression);
-                case ArchimedesCommandType.DigitalOutputsClear:
+                    return Expression.Call(typeof(ArchimedesCommand), "ProcessSetDigitalOutputs", null, expression);
+                case ArchimedesCommandType.ClearDigitalOutputs:
                     if (expression.Type != typeof(byte)) { expression = Expression.Convert(expression, typeof(byte)); }
-                    return Expression.Call(typeof(ArchimedesCommand), "ProcessDigitalOutputsClear", null, expression);
+                    return Expression.Call(typeof(ArchimedesCommand), "ProcessClearDigitalOutputs", null, expression);
 
                 /************************************************************************/
                 /* Registers: EN_LED_CONFS, DIS_LED_CONFS                               */
                 /************************************************************************/
-                case ArchimedesCommandType.LedConfig0:
+                case ArchimedesCommandType.PresetLedConfig0:
                     if (expression.Type != typeof(bool)) { expression = Expression.Convert(expression, typeof(bool)); }
-                    return Expression.Call(typeof(ArchimedesCommand), "ProcessLedConfig0", null, expression);
-                case ArchimedesCommandType.LedConfig1:
+                    return Expression.Call(typeof(ArchimedesCommand), "ProcessPresetLedConfig0", null, expression);
+                case ArchimedesCommandType.PresetLedConfig1:
                     if (expression.Type != typeof(bool)) { expression = Expression.Convert(expression, typeof(bool)); }
-                    return Expression.Call(typeof(ArchimedesCommand), "ProcessLedConfig1", null, expression);
-                case ArchimedesCommandType.LedConfig2:
+                    return Expression.Call(typeof(ArchimedesCommand), "ProcessPresetLedConfig1", null, expression);
+                case ArchimedesCommandType.PresetLedConfig2:
                     if (expression.Type != typeof(bool)) { expression = Expression.Convert(expression, typeof(bool)); }
-                    return Expression.Call(typeof(ArchimedesCommand), "ProcessLedConfig2", null, expression);
-                case ArchimedesCommandType.LedConfig3:
+                    return Expression.Call(typeof(ArchimedesCommand), "ProcessPresetLedConfig2", null, expression);
+                case ArchimedesCommandType.PresetLedConfig3:
                     if (expression.Type != typeof(bool)) { expression = Expression.Convert(expression, typeof(bool)); }
-                    return Expression.Call(typeof(ArchimedesCommand), "ProcessLedConfig3", null, expression);
-                case ArchimedesCommandType.LedConfig4:
+                    return Expression.Call(typeof(ArchimedesCommand), "ProcessPresetLedConfig3", null, expression);
+                case ArchimedesCommandType.PresetLedConfig4:
                     if (expression.Type != typeof(bool)) { expression = Expression.Convert(expression, typeof(bool)); }
-                    return Expression.Call(typeof(ArchimedesCommand), "ProcessLedConfig4", null, expression);
-                case ArchimedesCommandType.LedConfig5:
+                    return Expression.Call(typeof(ArchimedesCommand), "ProcessPresetLedConfig4", null, expression);
+                case ArchimedesCommandType.PresetLedConfig5:
                     if (expression.Type != typeof(bool)) { expression = Expression.Convert(expression, typeof(bool)); }
-                    return Expression.Call(typeof(ArchimedesCommand), "ProcessLedConfig5", null, expression);
-                case ArchimedesCommandType.LedConfig6:
+                    return Expression.Call(typeof(ArchimedesCommand), "ProcessPresetLedConfig5", null, expression);
+                case ArchimedesCommandType.PresetLedConfig6:
                     if (expression.Type != typeof(bool)) { expression = Expression.Convert(expression, typeof(bool)); }
-                    return Expression.Call(typeof(ArchimedesCommand), "ProcessLedConfig6", null, expression);
-                case ArchimedesCommandType.LedConfig7:
+                    return Expression.Call(typeof(ArchimedesCommand), "ProcessPresetLedConfig6", null, expression);
+                case ArchimedesCommandType.PresetLedConfig7:
                     if (expression.Type != typeof(bool)) { expression = Expression.Convert(expression, typeof(bool)); }
-                    return Expression.Call(typeof(ArchimedesCommand), "ProcessLedConfig7", null, expression);
+                    return Expression.Call(typeof(ArchimedesCommand), "ProcessPresetLedConfig7", null, expression);
 
-                case ArchimedesCommandType.LedConfigsSet:
+                case ArchimedesCommandType.SetPresetLedConfigs:
                     if (expression.Type != typeof(byte)) { expression = Expression.Convert(expression, typeof(byte)); }
-                    return Expression.Call(typeof(ArchimedesCommand), "ProcessLedConfigsSet", null, expression);
-                case ArchimedesCommandType.LedConfigsClear:
+                    return Expression.Call(typeof(ArchimedesCommand), "ProcessSetPresetLedConfigs", null, expression);
+                case ArchimedesCommandType.ClearPresetLedConfigs:
                     if (expression.Type != typeof(byte)) { expression = Expression.Convert(expression, typeof(byte)); }
-                    return Expression.Call(typeof(ArchimedesCommand), "ProcessLedConfigsClear", null, expression);
+                    return Expression.Call(typeof(ArchimedesCommand), "ProcessClearPresetLedConfigs", null, expression);
 
                 /************************************************************************/
                 /* Register: LEDS                                                       */
@@ -233,11 +232,11 @@ namespace Bonsai.Harp.CF
         static HarpMessage ProcessDigitalOutput4(bool input) { return CreateHarpFrameForDigitalOutputs(input, 4); }
         static HarpMessage ProcessDigitalOutput5(bool input) { return CreateHarpFrameForDigitalOutputs(input, 5); }
 
-        static HarpMessage ProcessDigitalOutputsSet(byte input)
+        static HarpMessage ProcessSetDigitalOutputs(byte input)
         {
             return new HarpMessage(true, 2, 5, 42, 255, (byte)PayloadType.U8, input, 0);
         }
-        static HarpMessage ProcessDigitalOutputsClear(byte input)
+        static HarpMessage ProcessClearDigitalOutputs(byte input)
         {
             return new HarpMessage(true, 2, 5, 43, 255, (byte)PayloadType.U8, input, 0);
         }
@@ -252,20 +251,20 @@ namespace Bonsai.Harp.CF
             else
                 return new HarpMessage(true, 2, 5, 45, 255, (byte)PayloadType.U8, (byte)(1 << ledNumber), 0);
         }
-        static HarpMessage ProcessLedConfig0(bool input) { return CreateHarpFrameForLeds(input, 0); }
-        static HarpMessage ProcessLedConfig1(bool input) { return CreateHarpFrameForLeds(input, 1); }
-        static HarpMessage ProcessLedConfig2(bool input) { return CreateHarpFrameForLeds(input, 2); }
-        static HarpMessage ProcessLedConfig3(bool input) { return CreateHarpFrameForLeds(input, 3); }
-        static HarpMessage ProcessLedConfig4(bool input) { return CreateHarpFrameForLeds(input, 4); }
-        static HarpMessage ProcessLedConfig5(bool input) { return CreateHarpFrameForLeds(input, 5); }
-        static HarpMessage ProcessLedConfig6(bool input) { return CreateHarpFrameForLeds(input, 6); }
-        static HarpMessage ProcessLedConfig7(bool input) { return CreateHarpFrameForLeds(input, 7); }
+        static HarpMessage ProcessPresetLedConfig0(bool input) { return CreateHarpFrameForLeds(input, 0); }
+        static HarpMessage ProcessPresetLedConfig1(bool input) { return CreateHarpFrameForLeds(input, 1); }
+        static HarpMessage ProcessPresetLedConfig2(bool input) { return CreateHarpFrameForLeds(input, 2); }
+        static HarpMessage ProcessPresetLedConfig3(bool input) { return CreateHarpFrameForLeds(input, 3); }
+        static HarpMessage ProcessPresetLedConfig4(bool input) { return CreateHarpFrameForLeds(input, 4); }
+        static HarpMessage ProcessPresetLedConfig5(bool input) { return CreateHarpFrameForLeds(input, 5); }
+        static HarpMessage ProcessPresetLedConfig6(bool input) { return CreateHarpFrameForLeds(input, 6); }
+        static HarpMessage ProcessPresetLedConfig7(bool input) { return CreateHarpFrameForLeds(input, 7); }
 
-        static HarpMessage ProcessLedConfigsSet(byte input)
+        static HarpMessage ProcessSetPresetLedConfigs(byte input)
         {
             return new HarpMessage(true, 2, 5, 44, 255, (byte)PayloadType.U8, input, 0);
         }
-        static HarpMessage ProcessLedConfigsClear(byte input)
+        static HarpMessage ProcessClearPresetLedConfigs(byte input)
         {
             return new HarpMessage(true, 2, 5, 45, 255, (byte)PayloadType.U8, input, 0);
         }

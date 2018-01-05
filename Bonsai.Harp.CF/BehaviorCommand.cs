@@ -37,18 +37,18 @@ namespace Bonsai.Harp.CF
 
         StartPwm,
         StopPwm,
-        WritePwmFrequency,
+        PwmFrequency,
 
-        WriteLedCurrent,
+        LedCurrent,
 
-        WritePulsePeriod,
+        PulsePeriod,
 
-        WriteColorsRgb,
-        WriteColorsRgbs,
+        ColorsRgb,
+        ColorsRgbs,
 
-        RegisterSetOutput,
-        RegisterClearOutput,
-        RegisterToggleOutput,
+        RegisterSetOutputs,
+        RegisterClearOutputs,
+        RegisterToggleOutputs,
         RegisterStartPwm,
         RegisterStopPwm
     }
@@ -61,20 +61,20 @@ namespace Bonsai.Harp.CF
         "\n" +
         "StartPwm: Any\n" +
         "StopPwm: Any\n" +
-        "WritePwmFrequency: Integer\n" +
+        "PwmFrequency: Integer\n" +
         "\n" +
-        "WriteLedCurrent: Integer\n" +
+        "LedCurrent: Integer\n" +
         "\n" +
-        "WritePulsePeriod: Integer\n" +
+        "PulsePeriod: Integer\n" +
         "\n" +
-        "WriteColorsRgb: Positive integer array[3] (G,R,B)\n" +
-        "WriteColorsRgbs: Positive integer array[6] (G,R,B,G,R,B)\n" +
+        "ColorsRgb: Positive integer array[3] (G,R,B)\n" +
+        "ColorsRgbs: Positive integer array[6] (G,R,B,G,R,B)\n" +
         "\n" +
-        "RegisterSetOutput: Bitmask U16\n" +
-        "RegisterClearOutput: Bitmask U16\n" +
-        "RegisterToggleOutput: Bitmask U16\n" +
-        "RegisterStartPwm: Bitmask U8\n" +
-        "RegisterStopPwm: Bitmask U8\n"
+        "RegisterSetOutputs: Bitmask" +
+        "RegisterClearOutputs: Bitmask\n" +
+        "RegisterToggleOutputs: Bitmask\n" +
+        "RegisterStartPwm: Bitmask\n" +
+        "RegisterStopPwm: Bitmask\n"
     )]
 
     public class BehaviorCommand : SelectBuilder, INamedElement
@@ -107,15 +107,15 @@ namespace Bonsai.Harp.CF
                 case BehaviorCommandType.ToggleOutput:
                     return Expression.Call(typeof(BehaviorCommand), "ProcessToggleOutput", new[] { expression.Type }, expression, GetBitMask());
 
-                case BehaviorCommandType.RegisterSetOutput:
+                case BehaviorCommandType.RegisterSetOutputs:
                     if (expression.Type != typeof(UInt16)) { expression = Expression.Convert(expression, typeof(UInt16)); }
-                    return Expression.Call(typeof(BehaviorCommand), "ProcessRegisterSetOutput", null, expression);
-                case BehaviorCommandType.RegisterClearOutput:
+                    return Expression.Call(typeof(BehaviorCommand), "ProcessRegisterSetOutputs", null, expression);
+                case BehaviorCommandType.RegisterClearOutputs:
                     if (expression.Type != typeof(UInt16)) { expression = Expression.Convert(expression, typeof(UInt16)); }
-                    return Expression.Call(typeof(BehaviorCommand), "ProcessRegisterClearOutput", null, expression);
-                case BehaviorCommandType.RegisterToggleOutput:
+                    return Expression.Call(typeof(BehaviorCommand), "ProcessRegisterClearOutputs", null, expression);
+                case BehaviorCommandType.RegisterToggleOutputs:
                     if (expression.Type != typeof(UInt16)) { expression = Expression.Convert(expression, typeof(UInt16)); }
-                    return Expression.Call(typeof(BehaviorCommand), "ProcessRegisterToggleOutput", null, expression);
+                    return Expression.Call(typeof(BehaviorCommand), "ProcessRegisterToggleOutputs", null, expression);
 
                 /************************************************************************/
                 /* Pwm                                                                  */
@@ -124,9 +124,9 @@ namespace Bonsai.Harp.CF
                     return Expression.Call(typeof(BehaviorCommand), "ProcessStartPwm", new[] { expression.Type }, expression, GetBitMask());
                 case BehaviorCommandType.StopPwm:
                     return Expression.Call(typeof(BehaviorCommand), "ProcessStopPwm", new[] { expression.Type }, expression, GetBitMask());
-                case BehaviorCommandType.WritePwmFrequency:
+                case BehaviorCommandType.PwmFrequency:
                     if (expression.Type != typeof(UInt16)) { expression = Expression.Convert(expression, typeof(UInt16)); }
-                    return Expression.Call(typeof(BehaviorCommand), "ProcessWritePwmFrequency", null, expression, GetBitMask());
+                    return Expression.Call(typeof(BehaviorCommand), "ProcessPwmFrequency", null, expression, GetBitMask());
 
                 case BehaviorCommandType.RegisterStartPwm:
                     if (expression.Type != typeof(byte)) { expression = Expression.Convert(expression, typeof(byte)); }
@@ -138,27 +138,27 @@ namespace Bonsai.Harp.CF
                 /************************************************************************/
                 /* Led                                                                  */
                 /************************************************************************/
-                case BehaviorCommandType.WriteLedCurrent:
+                case BehaviorCommandType.LedCurrent:
                     if (expression.Type != typeof(byte)) { expression = Expression.Convert(expression, typeof(byte)); }
-                    return Expression.Call(typeof(BehaviorCommand), "ProcessWriteLedCurrent", null, expression, GetBitMask());
+                    return Expression.Call(typeof(BehaviorCommand), "ProcessLedCurrent", null, expression, GetBitMask());
 
                /************************************************************************/
                 /* Pulse Period                                                         */
                 /************************************************************************/
-                case BehaviorCommandType.WritePulsePeriod:
+                case BehaviorCommandType.PulsePeriod:
                     if (expression.Type != typeof(UInt16)) { expression = Expression.Convert(expression, typeof(UInt16)); }
-                    return Expression.Call(typeof(BehaviorCommand), "ProcessWritePulsePeriod", null, expression, GetBitMask());
+                    return Expression.Call(typeof(BehaviorCommand), "ProcessPulsePeriod", null, expression, GetBitMask());
 
                 /************************************************************************/
                 /* RGBs                                                                 */
                 /************************************************************************/
-                case BehaviorCommandType.WriteColorsRgb:
+                case BehaviorCommandType.ColorsRgb:
                     if (expression.Type != typeof(byte[])) { expression = Expression.Convert(expression, typeof(byte[])); }
-                    return Expression.Call(typeof(BehaviorCommand), "ProcessWriteColorsRgb", null, expression, GetBitMask());
+                    return Expression.Call(typeof(BehaviorCommand), "ProcessColorsRgb", null, expression, GetBitMask());
 
-                case BehaviorCommandType.WriteColorsRgbs:
+                case BehaviorCommandType.ColorsRgbs:
                     if (expression.Type != typeof(byte[])) { expression = Expression.Convert(expression, typeof(byte[])); }
-                    return Expression.Call(typeof(BehaviorCommand), "ProcessWriteColorsRgbs", null, expression);
+                    return Expression.Call(typeof(BehaviorCommand), "ProcessColorsRgbs", null, expression);
 
                 default:
                     break;
@@ -191,9 +191,9 @@ namespace Bonsai.Harp.CF
         static HarpMessage ProcessClearOutput<TSource>(TSource input, int bMask)          { return createFrameU16(35, bMask); }
         static HarpMessage ProcessToggleOutput<TSource>(TSource input, int bMask)         { return createFrameU16(36, bMask); }
 
-        static HarpMessage ProcessRegisterSetOutput(UInt16 input)                         { return createFrameU16(34, input); }
-        static HarpMessage ProcessRegisterClearOutput(UInt16 input)                       { return createFrameU16(35, input); }
-        static HarpMessage ProcessRegisterToggleOutput(UInt16 input)                      { return createFrameU16(36, input); }
+        static HarpMessage ProcessRegisterSetOutputs(UInt16 input)                         { return createFrameU16(34, input); }
+        static HarpMessage ProcessRegisterClearOutputs(UInt16 input)                       { return createFrameU16(35, input); }
+        static HarpMessage ProcessRegisterToggleOutputs(UInt16 input)                      { return createFrameU16(36, input); }
 
         /************************************************************************/
         /* Pwm                                                                  */
@@ -213,7 +213,7 @@ namespace Bonsai.Harp.CF
             return createFrameU8(82, bMask);
         }
 
-        static HarpMessage ProcessWritePwmFrequency(UInt16 input, int bMask)
+        static HarpMessage ProcessPwmFrequency(UInt16 input, int bMask)
         {
             switch (bMask)
             {
@@ -232,7 +232,7 @@ namespace Bonsai.Harp.CF
         /************************************************************************/
         /* Led                                                                  */
         /************************************************************************/
-        static HarpMessage ProcessWriteLedCurrent(byte input, int bMask)
+        static HarpMessage ProcessLedCurrent(byte input, int bMask)
         {
             switch (bMask)
             {
@@ -246,7 +246,7 @@ namespace Bonsai.Harp.CF
         /************************************************************************/
         /* Pulse Period                                                         */
         /************************************************************************/
-        static HarpMessage ProcessWritePulsePeriod(UInt16 input, int bMask)
+        static HarpMessage ProcessPulsePeriod(UInt16 input, int bMask)
         {
             switch (bMask)
             {
@@ -272,7 +272,7 @@ namespace Bonsai.Harp.CF
         /************************************************************************/
         /* RGbs                                                                 */
         /************************************************************************/
-        static HarpMessage ProcessWriteColorsRgb(byte[] RGBs, int bMask)
+        static HarpMessage ProcessColorsRgb(byte[] RGBs, int bMask)
         {
             switch (bMask)
             {
@@ -285,7 +285,7 @@ namespace Bonsai.Harp.CF
             }
         }
 
-        static HarpMessage ProcessWriteColorsRgbs(byte [] RGBs)
+        static HarpMessage ProcessColorsRgbs(byte [] RGBs)
         {
             return new HarpMessage(true, 2, 83, 46, 255, (byte)PayloadType.U8, RGBs[0], RGBs[1], RGBs[2], RGBs[3], RGBs[4], RGBs[5], 0);
         }
