@@ -78,8 +78,6 @@
     <Compile Include="CameraCommand.cs" />
     <Compile Include="MultiPwmEvent.cs" />
     <Compile Include="MultiPwmCommand.cs" />
-    <Compile Include="PyControlEvent.cs" />
-    <Compile Include="PyControlCommand.cs" />
     <Compile Include="SynchronizerEvent.cs" />
     <Compile Include="SynchronizerCommand.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
