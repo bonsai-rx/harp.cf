@@ -47,7 +47,7 @@ namespace Bonsai.Harp.CF
         "AnalogInput:  Decimal (V)\n" +
         "\n" +
         "LeverIsQuiet: Boolean\n" +
-        "Thresholds: Groupmask\n" +
+        "Thresholds: Integer (*)\n" +
         "Threshold0: Boolean (*)\n" +
         "Threshold1: Boolean (*)\n" +
         "Threshold2: Boolean (*)\n" +
@@ -214,7 +214,7 @@ namespace Bonsai.Harp.CF
                     case 31: return 3;
                     default: return -1;
                 }
-            });
+            }).DistinctUntilChanged();
         }
 
         static IObservable<bool> ProcessLeverIsQuiet(IObservable<HarpMessage> source)

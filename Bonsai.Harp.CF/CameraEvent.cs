@@ -18,21 +18,21 @@ namespace Bonsai.Harp.CF
         Input0,
 
         /* Events: CAM0, CAM1, SYNC0 and SYNC1 */
-        Trig0,
-        Sync0,
-        Trig1,
-        Sync1
+        Camera0Trig,
+        Camera0Sync,
+        Camera1Trig,
+        Camera1Sync
     }
 
     [Description(
         "\n" +
         "Input0: Boolean\n" +
         "\n" +
-        "Trig0: Boolean\n" +
-        "Sync0: Boolean\n" +
+        "Camera0Trig: Boolean\n" +
+        "Camera0Sync: Boolean\n" +
         "\n" +
-        "Trig1: Boolean\n" +
-        "Sync1: Boolean\n"
+        "Camera1Trig: Boolean\n" +
+        "Camera1Sync: Boolean\n"
     )]
 
     public class CameraEvent : SingleArgumentExpressionBuilder, INamedElement
@@ -63,14 +63,14 @@ namespace Bonsai.Harp.CF
                 /************************************************************************/
                 /* Register:  CAM0, CAM1, SYNC0 and SYNC1                               */
                 /************************************************************************/
-                case CameraEventType.Trig0:
-                    return Expression.Call(typeof(CameraEvent), "ProcessTrig0", null, expression);
-                case CameraEventType.Sync0:
-                    return Expression.Call(typeof(CameraEvent), "ProcessSync0", null, expression);
-                case CameraEventType.Trig1:
-                    return Expression.Call(typeof(CameraEvent), "ProcessTrig1", null, expression);
-                case CameraEventType.Sync1:
-                    return Expression.Call(typeof(CameraEvent), "ProcessSync1", null, expression);
+                case CameraEventType.Camera0Trig:
+                    return Expression.Call(typeof(CameraEvent), "ProcessCamera0Trig", null, expression);
+                case CameraEventType.Camera0Sync:
+                    return Expression.Call(typeof(CameraEvent), "ProcessCamera0Sync", null, expression);
+                case CameraEventType.Camera1Trig:
+                    return Expression.Call(typeof(CameraEvent), "ProcessCamera1Trig", null, expression);
+                case CameraEventType.Camera1Sync:
+                    return Expression.Call(typeof(CameraEvent), "ProcessCamera1Sync", null, expression);
 
                 /************************************************************************/
                 /* Default                                                              */
@@ -97,15 +97,15 @@ namespace Bonsai.Harp.CF
         /************************************************************************/
         /* Register: CAM0, CAM1, SYNC0 and SYNC1                                */
         /************************************************************************/
-        static IObservable<bool> ProcessTrig0(IObservable<HarpMessage> source)
+        static IObservable<bool> ProcessCamera0Trig(IObservable<HarpMessage> source)
         {
             return source.Where(is_evt40).Select(input => { return ((input.MessageBytes[11] & (1 << 0)) == (1 << 0)) ? true : false; });
         }
-        static IObservable<bool> ProcessSync0(IObservable<HarpMessage> source)
+        static IObservable<bool> ProcessCamera0Sync(IObservable<HarpMessage> source)
         {
             return source.Where(is_evt42).Select(input => { return ((input.MessageBytes[11] & (1 << 0)) == (1 << 0)) ? true : false; });
         }
-        static IObservable<bool> ProcessTrig1(IObservable<HarpMessage> source)
+        static IObservable<bool> ProcessCamera1Trig(IObservable<HarpMessage> source)
         {
             return source.Where(is_evt41).Select(input => { return ((input.MessageBytes[11] & (1 << 0)) == (1 << 0)) ? true : false; });
         }

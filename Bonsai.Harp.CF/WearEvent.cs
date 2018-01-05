@@ -15,10 +15,10 @@ namespace Bonsai.Harp.CF
     public enum WearEventType : byte
     {
         /* Event: DATA */
-        MotionAll = 0,
-        MotionAccelerometer,
-        MotionGyroscope,
-        MotionMagnetometer,
+        Motion9Axis = 0,
+        Accelerometer,
+        Gyroscope,
+        Magnetometer,
 
         /* Event: MISC */
         AnalogInput,
@@ -56,10 +56,10 @@ namespace Bonsai.Harp.CF
 
     [Description(
         "\n" +
-        "MotionAll: Integer Mat[9]\n" +
-        "MotionAccelerometer: Integer Mat[3]\n" +
-        "MotionGyroscope: Integer Mat[3]\n" +
-        "MotionMagnetometer: Integer Mat[3]\n" +
+        "Motion9Axis: Integer Mat[9]\n" +
+        "Accelerometer: Integer Mat[3]\n" +
+        "Gyroscope: Integer Mat[3]\n" +
+        "Magnetometer: Integer Mat[3]\n" +
         "\n" +
         "AnalogInput: Decimal (V)\n" +
         "DigitalInput0: Boolean (*)\n" +
@@ -67,15 +67,15 @@ namespace Bonsai.Harp.CF
         "DigitalInputs: Integer Mat[2]\n" +
         "\n" +
         "Acquiring: Boolean\n" +
-        "DeviceSelected: Boolean\n" +
+        "DeviceSelected: String\n" +
         "SensorTemperature: Decimal (ºC)\n" +
         "TxRetries: Integer\n" +
         "Battery: Integer\n" +
         "RxGood: Boolean\n" +
-        "SensorVersions: Text\n" +
+        "SensorVersions: String\n" +
         "\n" +
         "RegisterStimulationStart: U8\n" +
-        "RegisterMisc: MISC register U16\n" +
+        "RegisterMisc: U16\n" +
         "RegisterCamera0: U8\n" +
         "RegisterCamera1: U8\n" +
         "RegisterAcquisitionStatus: U8\n" +
@@ -92,7 +92,7 @@ namespace Bonsai.Harp.CF
     {
         public WearEvent()
         {
-            Type = WearEventType.MotionAll;
+            Type = WearEventType.Motion9Axis;
         }
 
         string INamedElement.Name
@@ -110,14 +110,14 @@ namespace Bonsai.Harp.CF
                 /************************************************************************/
                 /* Register: DATA                                                       */
                 /************************************************************************/
-                case WearEventType.MotionAll:
-                    return Expression.Call(typeof(WearEvent), "ProcessMotionAll", null, expression);
-                case WearEventType.MotionAccelerometer:
-                    return Expression.Call(typeof(WearEvent), "ProcessMotionAccelerometer", null, expression);
-                case WearEventType.MotionGyroscope:
-                    return Expression.Call(typeof(WearEvent), "ProcessMotionGyroscope", null, expression);
-                case WearEventType.MotionMagnetometer:
-                    return Expression.Call(typeof(WearEvent), "ProcessMotionMagnetometer", null, expression);
+                case WearEventType.Motion9Axis:
+                    return Expression.Call(typeof(WearEvent), "ProcessMotion9Axis", null, expression);
+                case WearEventType.Accelerometer:
+                    return Expression.Call(typeof(WearEvent), "ProcessAccelerometer", null, expression);
+                case WearEventType.Gyroscope:
+                    return Expression.Call(typeof(WearEvent), "ProcessGyroscope", null, expression);
+                case WearEventType.Magnetometer:
+                    return Expression.Call(typeof(WearEvent), "ProcessMagnetometer", null, expression);
 
                 /************************************************************************/
                 /* Register: MISC                                                       */
@@ -232,7 +232,7 @@ namespace Bonsai.Harp.CF
         /************************************************************************/
         /* Register: DATA                                                       */
         /************************************************************************/
-        static IObservable<Mat> ProcessMotionAll(IObservable<HarpMessage> source)
+        static IObservable<Mat> ProcessMotion9Axis(IObservable<HarpMessage> source)
         {
             return Observable.Defer(() =>
             {
@@ -249,7 +249,7 @@ namespace Bonsai.Harp.CF
             });
         }
 
-        static IObservable<Mat> ProcessMotionAccelerometer(IObservable<HarpMessage> source)
+        static IObservable<Mat> ProcessAccelerometer(IObservable<HarpMessage> source)
         {
             return Observable.Defer(() =>
             {
@@ -266,7 +266,7 @@ namespace Bonsai.Harp.CF
             });
         }
 
-        static IObservable<Mat> ProcessMotionGyroscope(IObservable<HarpMessage> source)
+        static IObservable<Mat> ProcessGyroscope(IObservable<HarpMessage> source)
         {
             return Observable.Defer(() =>
             {
@@ -283,7 +283,7 @@ namespace Bonsai.Harp.CF
             });
         }
 
-        static IObservable<Mat> ProcessMotionMagnetometer(IObservable<HarpMessage> source)
+        static IObservable<Mat> ProcessMagnetometer(IObservable<HarpMessage> source)
         {
             return Observable.Defer(() =>
             {

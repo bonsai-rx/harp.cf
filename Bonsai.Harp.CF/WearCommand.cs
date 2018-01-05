@@ -19,8 +19,8 @@ namespace Bonsai.Harp.CF
         PositionMotor0,
         PositionMotor1,
 
-        Output0,
-        Output1
+        DigitalOutput0,
+        DigitalOutput1
     }
 
     [Description(
@@ -32,8 +32,8 @@ namespace Bonsai.Harp.CF
         "PositionMotor0: Positive integer\n" +    // Don't need to indicate it's a UInt16 since the code makes the conversion
         "PositionMotor1: Positive integer\n" +    // Don't need to indicate it's a UInt16 since the code makes the conversion
         "\n" +
-        "Output0: Boolean\n" +
-        "Output1: Boolean\n"
+        "DigitalOutput0: Boolean\n" +
+        "DigitalOutput1: Boolean\n"
     )]
     public class WearCommand : SelectBuilder, INamedElement
     {
@@ -67,12 +67,12 @@ namespace Bonsai.Harp.CF
                     if (expression.Type != typeof(UInt16)) { expression = Expression.Convert(expression, typeof(UInt16)); }
                     return Expression.Call(typeof(WearCommand), "ProcessPositionMotor1", null, expression);
 
-                case WearCommandType.Output0:
+                case WearCommandType.DigitalOutput0:
                     if (expression.Type != typeof(bool)) { expression = Expression.Convert(expression, typeof(bool)); }
-                    return Expression.Call(typeof(WearCommand), "ProcessOutput0", null, expression);
-                case WearCommandType.Output1:
+                    return Expression.Call(typeof(WearCommand), "ProcessDigitalOutput0", null, expression);
+                case WearCommandType.DigitalOutput1:
                     if (expression.Type != typeof(bool)) { expression = Expression.Convert(expression, typeof(bool)); }
-                    return Expression.Call(typeof(WearCommand), "ProcessOutput1", null, expression);
+                    return Expression.Call(typeof(WearCommand), "ProcessDigitalOutput1", null, expression);
 
                 default:
                     break;
@@ -107,12 +107,12 @@ namespace Bonsai.Harp.CF
         }
 
 
-        static HarpMessage ProcessOutput0(bool input)
+        static HarpMessage ProcessDigitalOutput0(bool input)
         {
             return new HarpMessage(true, 2, 5, 38, 255, (byte)PayloadType.U8, (byte)(input ? 1 : 0), 0);
         }
 
-        static HarpMessage ProcessOutput1(bool input)
+        static HarpMessage ProcessDigitalOutput1(bool input)
         {
             return new HarpMessage(true, 2, 5, 39, 255, (byte)PayloadType.U8, (byte)(input ? 1 : 0), 0);
         }

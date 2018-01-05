@@ -44,7 +44,7 @@ namespace Bonsai.Harp.CF
         "Input8: Boolean (*)\n" +
         "Address: Integer\n" +
         "\n" +
-        "RegisterInputs: INPUTS register U16\n" +
+        "RegisterInputs: Bitmask U16\n" +
         "\n" +
         "(*) Only distinct contiguous elements are propagated."
     )]
