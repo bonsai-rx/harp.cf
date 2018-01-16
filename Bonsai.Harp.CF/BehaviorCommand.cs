@@ -70,7 +70,7 @@ namespace Bonsai.Harp.CF
         "ColorsRgb: Positive integer array[3] (G,R,B)\n" +
         "ColorsRgbs: Positive integer array[6] (G,R,B,G,R,B)\n" +
         "\n" +
-        "RegisterSetOutputs: Bitmask" +
+        "RegisterSetOutputs: Bitmask\n" +
         "RegisterClearOutputs: Bitmask\n" +
         "RegisterToggleOutputs: Bitmask\n" +
         "RegisterStartPwm: Bitmask\n" +
@@ -203,14 +203,14 @@ namespace Bonsai.Harp.CF
             if (bMask < 1024 || bMask > 15360)
                 throw new InvalidOperationException("Invalid Mask selection. Only Digital0, Digital1, Digital2 and/or Digital3 can be selected.");
 
-            return createFrameU8(81, bMask);
+            return createFrameU8(81, bMask >> 10);
         }
         static HarpMessage ProcessStopPwm<TSource>(TSource input, int bMask)
         {
             if (bMask < 1024 || bMask > 15360)
                 throw new InvalidOperationException("Invalid Mask selection. Only Digital0, Digital1, Digital2 and/or Digital3 can be selected.");
 
-            return createFrameU8(82, bMask);
+            return createFrameU8(82, bMask >> 10);
         }
 
         static HarpMessage ProcessPwmFrequency(UInt16 input, int bMask)
@@ -222,12 +222,12 @@ namespace Bonsai.Harp.CF
                 case (UInt16)BehaviorPorts.Digital2: return createFrameU16(75, input);
                 case (UInt16)BehaviorPorts.Digital3: return createFrameU16(76, input);
                 default:
-                    throw new InvalidOperationException("Invalid Mask selection. Only Digital0, Digital1, Digital2 or Digital3 can be selected.");
+                    throw new InvalidOperationException("Invalid Mask selection. Only Digital0, Digital1, Digital2 or Digital3 can be individually selected.");
             }
         }
 
-        static HarpMessage ProcessRegisterStartPwm(byte input)                          { return createFrameU16(81, input); }
-        static HarpMessage ProcessRegisterStopPwm(byte input)                           { return createFrameU16(82, input); }
+        static HarpMessage ProcessRegisterStartPwm(byte input)                          { return createFrameU8(81, input); }
+        static HarpMessage ProcessRegisterStopPwm(byte input)                           { return createFrameU8(82, input); }
 
         /************************************************************************/
         /* Led                                                                  */
@@ -239,7 +239,7 @@ namespace Bonsai.Harp.CF
                 case (UInt16)BehaviorPorts.Led0: return createFrameU8(86, input);
                 case (UInt16)BehaviorPorts.Led1: return createFrameU8(86, input);
                 default:
-                    throw new InvalidOperationException("Invalid Mask selection. Only Led0 or Led1 can be selected.");
+                    throw new InvalidOperationException("Invalid Mask selection. Only Led0 or Led1 can be individually selected.");
             }
         }
 
@@ -281,7 +281,7 @@ namespace Bonsai.Harp.CF
                 case (UInt16)BehaviorPorts.Rgb1:
                     return new HarpMessage(true, 2, 7, 85, 255, (byte)PayloadType.U8, RGBs[0], RGBs[1], RGBs[2], 0);
                 default:
-                    throw new InvalidOperationException("Invalid Mask selection. Only Rgb0 or Rgb1 can be selected.");
+                    throw new InvalidOperationException("Invalid Mask selection. Only Rgb0 or Rgb1 can be individually selected.");
             }
         }
 
