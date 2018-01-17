@@ -287,7 +287,7 @@ namespace Bonsai.Harp.CF
 
         static HarpMessage ProcessColorsRgbs(byte [] RGBs)
         {
-            return new HarpMessage(true, 2, 83, 46, 255, (byte)PayloadType.U8, RGBs[0], RGBs[1], RGBs[2], RGBs[3], RGBs[4], RGBs[5], 0);
+            return new HarpMessage(true, 2, 10, 83, 255, (byte)PayloadType.U8, RGBs[0], RGBs[1], RGBs[2], RGBs[3], RGBs[4], RGBs[5], 0);
         }
     }
 }
