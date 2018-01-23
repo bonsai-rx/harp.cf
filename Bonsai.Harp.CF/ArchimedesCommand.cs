@@ -47,6 +47,7 @@ namespace Bonsai.Harp.CF
         "LoadPosition: Positive integer\n" +
         "\n" +
         "ResetLeverAngle: Any\n" +
+        "ResetLoadPosition: Any\n" +
         "HideLever: Boolean\n" +
         "UnhideLever: Boolean\n" +
         "\n" +
