@@ -179,7 +179,7 @@ namespace Bonsai.Harp.CF
         }
         static IObservable<bool> ProcessInput8(IObservable<HarpMessage> source)
         {
-            return source.Where(is_evt32).Select(input => { return ((input.MessageBytes[11] & (1 << 8)) == (1 << 8)); }).DistinctUntilChanged();
+            return source.Where(is_evt32).Select(input => { return ((input.MessageBytes[12] & (1 << 0)) == (1 << 0)); }).DistinctUntilChanged();
         }
 
         static IObservable<int> ProcessAddress(IObservable<HarpMessage> source)
