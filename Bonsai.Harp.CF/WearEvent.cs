@@ -15,7 +15,7 @@ namespace Bonsai.Harp.CF
     public enum WearEventType : byte
     {
         /* Event: DATA */
-        Motion9Axis = 0,
+        Motion = 0,
         Accelerometer,
         Gyroscope,
         Magnetometer,
@@ -56,7 +56,7 @@ namespace Bonsai.Harp.CF
 
     [Description(
         "\n" +
-        "Motion9Axis: Integer Mat[9]\n" +
+        "Motion: Integer Mat[9]\n" +
         "Accelerometer: Integer Mat[3]\n" +
         "Gyroscope: Integer Mat[3]\n" +
         "Magnetometer: Integer Mat[3]\n" +
@@ -92,7 +92,7 @@ namespace Bonsai.Harp.CF
     {
         public WearEvent()
         {
-            Type = WearEventType.Motion9Axis;
+            Type = WearEventType.Motion;
         }
 
         string INamedElement.Name
@@ -110,8 +110,8 @@ namespace Bonsai.Harp.CF
                 /************************************************************************/
                 /* Register: DATA                                                       */
                 /************************************************************************/
-                case WearEventType.Motion9Axis:
-                    return Expression.Call(typeof(WearEvent), "ProcessMotion9Axis", null, expression);
+                case WearEventType.Motion:
+                    return Expression.Call(typeof(WearEvent), "ProcessMotion", null, expression);
                 case WearEventType.Accelerometer:
                     return Expression.Call(typeof(WearEvent), "ProcessAccelerometer", null, expression);
                 case WearEventType.Gyroscope:
@@ -232,7 +232,7 @@ namespace Bonsai.Harp.CF
         /************************************************************************/
         /* Register: DATA                                                       */
         /************************************************************************/
-        static IObservable<Mat> ProcessMotion9Axis(IObservable<HarpMessage> source)
+        static IObservable<Mat> ProcessMotion(IObservable<HarpMessage> source)
         {
             return Observable.Defer(() =>
             {
