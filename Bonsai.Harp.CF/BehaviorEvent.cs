@@ -11,33 +11,56 @@ using TResult = System.String;
 using System.ComponentModel;
 
 namespace Bonsai.Harp.CF
-{
+{   
+    //          0  1    2 3  4    5 6  7    8   9   10   11   12   13   14  15
+    // [0-15]   P0 P0IR - P1 P1IR - P2 P2IR -   -   -    -    -    -    -   -
+    // [16-31]  -  -    - -  -    - -  -    -   -   Dig0 Dig1 Dig2 Dig3 -   -
+    [Flags]
+    public enum BehaviorInputPorts : UInt32
+    {
+        Port0 = (1 << 0),
+        Poke0InfraRedBeam = (1 << 1),
+        Port1 = (1 << 3),
+        Poke1InfraRedBeam = (1 << 4),
+        Port2 = (1 << 6),
+        Poke2InfraRedBeam = (1 << 7),
+        Digital0 = (1 << 10) << 16,
+        Digital1 = (1 << 11) << 16,
+        Digital2 = (1 << 12) << 16,
+        Digital3 = (1 << 13) << 16,
+    }
     public enum BehaviorEventType : byte
     {
-        /* Event: POKE_IN */
-        Poke0Input = 0,
-        Poke1Input,
-        Poke2Input,
-        PokesInput,
+        /* Event: INPUTS */
+        Input = 0,
+        //InputOutput,
 
-        /* Event: ADC */
+        /* Event: ADC_AND_ENCODER */
         AnalogInput,
+        QuadratureCounter,
+
+        /* Event: CAM_OUTx_FRAME_ACQUIRED */
+        Camera,
 
         /* Raw Registers */
-        RegisterPokesInput,
+        RegisterInputs,
+        //RegisterInputsOutputs,
         RegisterAnalogInput,
+        RegisterCamera,
     }
 
     [Description(
         "\n" +
-        "Poke0Input: Boolean (*)\n" +
-        "Poke1Input: Boolean (*)\n" +
-        "Poke2Input: Boolean (*)\n" +
-        "PokesInput: Integer Mat[3]\n" +
+        "Input: Boolean (*)\n" +
+        //"InputOutput: Boolean (*)\n" +
         "\n" +
         "AnalogInput: Decimal (V)\n" +
+        "QuadratureCounter: Integer\n" +
         "\n" +
-        "RegisterPokesInput: Groupmask U8\n" +
+        "Camera: Boolean\n" +
+        "\n" +
+        "RegisterInputs: Bitmask U8\n" +
+        //"RegisterInputsOutputs: Bitpmask U8\n" +
         "RegisterAnalogInput: U16\n" +
         "\n" +
         "(*) Only distinct contiguous elements are propagated."
@@ -47,7 +70,8 @@ namespace Bonsai.Harp.CF
     {
         public BehaviorEvent()
         {
-            Type = BehaviorEventType.Poke0Input;
+            Type = BehaviorEventType.Input;
+            Mask = BehaviorInputPorts.Port0;
         }
 
         string INamedElement.Name
@@ -56,6 +80,7 @@ namespace Bonsai.Harp.CF
         }
 
         public BehaviorEventType Type { get; set; }
+        public BehaviorInputPorts Mask { get; set; }
 
         public override Expression Build(IEnumerable<Expression> expressions)
         {
@@ -63,30 +88,34 @@ namespace Bonsai.Harp.CF
             switch (Type)
             {
                 /************************************************************************/
-                /* Register: POKE_IN                                                    */
+                /* Register: INPUTS                                                     */
                 /************************************************************************/
-                case BehaviorEventType.Poke0Input:
-                    return Expression.Call(typeof(BehaviorEvent), "ProcessPoke0Input", null, expression);
-                case BehaviorEventType.Poke1Input:
-                    return Expression.Call(typeof(BehaviorEvent), "ProcessPoke1Input", null, expression);
-                case BehaviorEventType.Poke2Input:
-                    return Expression.Call(typeof(BehaviorEvent), "ProcessPoke2Input", null, expression);
-                case BehaviorEventType.PokesInput:
-                    return Expression.Call(typeof(BehaviorEvent), "ProcessPokesInput", null, expression);
+                case BehaviorEventType.Input:
+                    return Expression.Call(typeof(BehaviorEvent), "ProcessInput", null, expression, GetBitMask());
 
                 /************************************************************************/
-                /* Register: MISC                                                       */
+                /* Register: ADC_AND_ENCODER                                            */
                 /************************************************************************/
                 case BehaviorEventType.AnalogInput:
                     return Expression.Call(typeof(BehaviorEvent), "ProcessAnalogInput", null, expression);
+                case BehaviorEventType.QuadratureCounter:
+                    return Expression.Call(typeof(BehaviorEvent), "ProcessQuadratureCounter", null, expression, GetBitMask());
+
+                /************************************************************************/
+                /* Register: CAMERA                                                     */
+                /************************************************************************/
+                case BehaviorEventType.Camera:
+                    return Expression.Call(typeof(BehaviorEvent), "ProcessCamera", null, expression, GetBitMask());
 
                 /************************************************************************/
                 /* Raw Registers                                                        */
                 /************************************************************************/
-                case BehaviorEventType.RegisterPokesInput:
-                    return Expression.Call(typeof(BehaviorEvent), "ProcessRegisterPokesInput", null, expression);
+                case BehaviorEventType.RegisterInputs:
+                    return Expression.Call(typeof(BehaviorEvent), "ProcessRegisterInputs", null, expression);
                 case BehaviorEventType.RegisterAnalogInput:
                     return Expression.Call(typeof(BehaviorEvent), "ProcessRegisterAnalogInput", null, expression);
+                case BehaviorEventType.RegisterCamera:
+                    return Expression.Call(typeof(BehaviorEvent), "ProcessRegisterCamera", null, expression, GetBitMask());
 
                 /************************************************************************/
                 /* Default                                                              */
@@ -96,6 +125,41 @@ namespace Bonsai.Harp.CF
             }
         }
 
+        /************************************************************************/
+        /* Local functions                                                      */
+        /************************************************************************/
+        Expression GetBitMask()
+        {
+            return Expression.Convert(Expression.Constant(Mask), typeof(UInt32));
+        }
+
+        static byte GetRegDIs(UInt32 BonsaiBitMaks)
+        {
+            byte regPortDIs;
+
+            regPortDIs = ((UInt32)(BonsaiBitMaks & (UInt32)(BehaviorInputPorts.Port0)) == (UInt32)(BehaviorInputPorts.Port0)) ? (byte)(1 << 0) : (byte)0;
+            regPortDIs |= ((UInt32)(BonsaiBitMaks & (UInt32)(BehaviorInputPorts.Port1)) == (UInt32)(BehaviorInputPorts.Port1)) ? (byte)(1 << 1) : (byte)0;
+            regPortDIs |= ((UInt32)(BonsaiBitMaks & (UInt32)(BehaviorInputPorts.Port2)) == (UInt32)(BehaviorInputPorts.Port2)) ? (byte)(1 << 2) : (byte)0;
+
+            regPortDIs |= ((UInt32)(BonsaiBitMaks & (UInt32)(BehaviorInputPorts.Poke0InfraRedBeam)) == (UInt32)(BehaviorInputPorts.Poke0InfraRedBeam)) ? (byte)(1 << 0) : (byte)0;
+            regPortDIs |= ((UInt32)(BonsaiBitMaks & (UInt32)(BehaviorInputPorts.Poke1InfraRedBeam)) == (UInt32)(BehaviorInputPorts.Poke1InfraRedBeam)) ? (byte)(1 << 1) : (byte)0;
+            regPortDIs |= ((UInt32)(BonsaiBitMaks & (UInt32)(BehaviorInputPorts.Poke2InfraRedBeam)) == (UInt32)(BehaviorInputPorts.Poke2InfraRedBeam)) ? (byte)(1 << 2) : (byte)0;
+
+            return regPortDIs;
+        }
+
+        static byte GetOutputsBitMask(UInt32 BonsaiBitMaks)
+        {
+            byte regOutputsBitMask;
+
+            regOutputsBitMask = ((UInt32)(BonsaiBitMaks & (UInt32)(BehaviorInputPorts.Digital0)) == (UInt32)(BehaviorInputPorts.Digital0)) ? (byte)(1 << 0) : (byte)0;
+            regOutputsBitMask |= ((UInt32)(BonsaiBitMaks & (UInt32)(BehaviorInputPorts.Digital1)) == (UInt32)(BehaviorInputPorts.Digital1)) ? (byte)(1 << 1) : (byte)0;
+            regOutputsBitMask |= ((UInt32)(BonsaiBitMaks & (UInt32)(BehaviorInputPorts.Digital2)) == (UInt32)(BehaviorInputPorts.Digital2)) ? (byte)(1 << 2) : (byte)0;
+            regOutputsBitMask |= ((UInt32)(BonsaiBitMaks & (UInt32)(BehaviorInputPorts.Digital3)) == (UInt32)(BehaviorInputPorts.Digital3)) ? (byte)(1 << 3) : (byte)0;
+
+            return regOutputsBitMask;
+        }
+
         static double ParseTimestamp(byte[] message, int index)
         {
             var seconds = BitConverter.ToUInt32(message, index);
@@ -103,44 +167,37 @@ namespace Bonsai.Harp.CF
             return seconds + microseconds * 32e-6;
         }
 
-        static bool is_evt32(HarpMessage input) { return ((input.Address == 32) && (input.Error == false) && (input.MessageType == MessageType.Event)); }
-        static bool is_evt43(HarpMessage input) { return ((input.Address == 43) && (input.Error == false) && (input.MessageType == MessageType.Event)); }
+        static bool is_evt32(HarpMessage input) { return ((input.Address == 32) && (input.Error == false) && (input.MessageType == MessageType.Event)); }        
         static bool is_evt44(HarpMessage input) { return ((input.Address == 44) && (input.Error == false) && (input.MessageType == MessageType.Event)); }
+        static bool is_evt92(HarpMessage input) { return ((input.Address == 92) && (input.Error == false) && (input.MessageType == MessageType.Event)); }
+        static bool is_evt94(HarpMessage input) { return ((input.Address == 94) && (input.Error == false) && (input.MessageType == MessageType.Event)); }
 
         /************************************************************************/
-        /* Register: POKE_IN                                                    */
+        /* Register: INPUTS                                                     */
         /************************************************************************/
-        static IObservable<bool> ProcessPoke0Input(IObservable<HarpMessage> source)
+        static IObservable<bool> ProcessInput(IObservable<HarpMessage> source, UInt32 bMask)
         {
-            return source.Where(is_evt32).Select(input => { return ((input.MessageBytes[11] & (1 << 0)) == (1 << 0)); }).DistinctUntilChanged();
-        }
-        static IObservable<bool> ProcessPoke1Input(IObservable<HarpMessage> source)
-        {
-            return source.Where(is_evt32).Select(input => { return ((input.MessageBytes[11] & (1 << 1)) == (1 << 1)); }).DistinctUntilChanged();
-        }
-        static IObservable<bool> ProcessPoke2Input(IObservable<HarpMessage> source)
-        {
-            return source.Where(is_evt32).Select(input => { return ((input.MessageBytes[11] & (1 << 2)) == (1 << 2)); }).DistinctUntilChanged();
-        }
-        static IObservable<Mat> ProcessPokesInput(IObservable<HarpMessage> source)
-        {
-            return Observable.Defer(() =>
+            switch (bMask)
             {
-                var buffer = new byte[3];
-                return source.Where(is_evt32).Select(input =>
-                {
-                    for (int i = 0; i < buffer.Length; i++)
-                    {
-                        buffer[i] = ((input.MessageBytes[11] & (1 << i)) == (1 << i)) ? (byte)1 : (byte)0;
-                    }
-
-                    return Mat.FromArray(buffer, 3, 1, Depth.U8, 1);
-                });
-            });
+                case (UInt32)BehaviorInputPorts.Port0:
+                case (UInt32)BehaviorInputPorts.Poke0InfraRedBeam:
+                    return source.Where(is_evt32).Select(input => { return ((input.MessageBytes[11] & (1 << 0)) == (1 << 0)); }).DistinctUntilChanged();
+                
+                case (UInt32)BehaviorInputPorts.Port1:
+                case (UInt32)BehaviorInputPorts.Poke1InfraRedBeam:
+                    return source.Where(is_evt32).Select(input => { return ((input.MessageBytes[11] & (1 << 1)) == (1 << 1)); }).DistinctUntilChanged();
+                
+                case (UInt32)BehaviorInputPorts.Port2:
+                case (UInt32)BehaviorInputPorts.Poke2InfraRedBeam:
+                    return source.Where(is_evt32).Select(input => { return ((input.MessageBytes[11] & (1 << 2)) == (1 << 2)); }).DistinctUntilChanged();
+                
+                default:
+                    throw new InvalidOperationException("Invalid Mask selection. Only Port0 or Port1 or Port2 or Poke0InfraRedBeam or Poke1InfraRedBeam or Poke2InfraRedBeam can be individually selected.");
+            }
         }
 
         /************************************************************************/
-        /* Register: ADC                                                        */
+        /* Register: DATA                                                       */
         /************************************************************************/
         static IObservable<float> ProcessAnalogInput(IObservable<HarpMessage> source)
         {
@@ -150,10 +207,40 @@ namespace Bonsai.Harp.CF
             return source.Where(is_evt44).Select(input => { return (float)(5.0 / 3972.0) * ((int)((UInt16)(BitConverter.ToUInt16(input.MessageBytes, 11) & (UInt16)(0x0FFF)))); });
         }
 
+        static IObservable<int> ProcessQuadratureCounter(IObservable<HarpMessage> source, UInt32 bMask)
+        {
+            switch (bMask)
+            {
+                case (UInt32)BehaviorInputPorts.Port2:
+                    return source.Where(is_evt44).Select(input => { return (int)(BitConverter.ToInt16(input.MessageBytes, 13)); });
+                
+                default:
+                    throw new InvalidOperationException("Invalid Mask selection. Only Port2 can be selected.");
+            }
+        }
+
+        /************************************************************************/
+        /* Register: CAMERA                                                     */
+        /************************************************************************/
+        static IObservable<bool> ProcessCamera(IObservable<HarpMessage> source, UInt32 bMask)
+        {
+            switch (bMask)
+            {
+                case (UInt32)BehaviorInputPorts.Digital0:
+                    return source.Where(is_evt92).Select(input => { return true; });
+
+                case (UInt32)BehaviorInputPorts.Digital1:
+                    return source.Where(is_evt94).Select(input => { return true; });
+
+                default:
+                    throw new InvalidOperationException("Invalid Mask selection. Only Digital0 or Digital1 can be individually selected.");
+            }
+        }
+
         /************************************************************************/
         /* Raw Registers                                                        */
         /************************************************************************/
-        static IObservable<Timestamped<byte>> ProcessRegisterPokesInput(IObservable<HarpMessage> source)
+        static IObservable<Timestamped<byte>> ProcessRegisterInputs(IObservable<HarpMessage> source)
         {
             return source.Where(is_evt32).Select(input => { return new Timestamped<byte>(input.MessageBytes[11], ParseTimestamp(input.MessageBytes, 5)); });
         }
@@ -161,6 +248,21 @@ namespace Bonsai.Harp.CF
         static IObservable<Timestamped<UInt16>> ProcessRegisterAnalogInput(IObservable<HarpMessage> source)
         {
             return source.Where(is_evt44).Select(input => { return new Timestamped<UInt16>(BitConverter.ToUInt16(input.MessageBytes, 11), ParseTimestamp(input.MessageBytes, 5)); });
+        }
+
+        static IObservable<Timestamped<byte>> ProcessRegisterCamera(IObservable<HarpMessage> source, UInt32 bMask)
+        {
+            switch (bMask)
+            {
+                case (UInt32)BehaviorInputPorts.Digital0:
+                    return source.Where(is_evt92).Select(input => { return new Timestamped<byte>(input.MessageBytes[11], ParseTimestamp(input.MessageBytes, 5)); });
+
+                case (UInt32)BehaviorInputPorts.Digital1:
+                    return source.Where(is_evt94).Select(input => { return new Timestamped<byte>(input.MessageBytes[11], ParseTimestamp(input.MessageBytes, 5)); });
+
+                default:
+                    throw new InvalidOperationException("Invalid Mask selection. Only Digital0 or Digital1 can be individually selected.");
+            }
         }
     }
 }
