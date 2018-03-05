@@ -62,6 +62,7 @@ namespace Bonsai.Harp.CF
         "RegisterInputs: Bitmask U8\n" +
         //"RegisterInputsOutputs: Bitpmask U8\n" +
         "RegisterAnalogInput: U16\n" +
+        "RegisterCamera: U8\n" +
         "\n" +
         "(*) Only distinct contiguous elements are propagated."
     )]

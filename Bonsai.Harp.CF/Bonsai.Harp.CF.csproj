@@ -85,7 +85,9 @@
     <Compile Include="WearCommand.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Bonsai.Harp.CF.nuspec" />
+    <None Include="Bonsai.Harp.CF.nuspec">
+      <SubType>Designer</SubType>
+    </None>
     <None Include="packages.config">
       <SubType>Designer</SubType>
     </None>
