@@ -20,7 +20,15 @@ namespace Bonsai.Harp.CF
         PositionMotor1,
 
         DigitalOutput0,
-        DigitalOutput1
+        DigitalOutput1,
+
+        StartCamera0,
+        StopCamera0,
+        StartCamera1,
+        StopCamera1,
+
+        CameraOutput0,
+        CameraOutput1
     }
 
     [Description(
@@ -33,7 +41,15 @@ namespace Bonsai.Harp.CF
         "PositionMotor1: Positive integer\n" +    // Don't need to indicate it's a UInt16 since the code makes the conversion
         "\n" +
         "DigitalOutput0: Boolean\n" +
-        "DigitalOutput1: Boolean\n"
+        "DigitalOutput1: Boolean\n" +
+        "\n" +
+        "StartCamera0: Boolean\n" +
+        "StopCamera0: Boolean\n" +
+        "StartCamera1: Boolean\n" +
+        "StopCamera1: Boolean\n" +
+        "\n" +
+        "CameraOutput0: Boolean\n" +
+        "CaemraOutput1: Boolean\n"
     )]
     public class WearCommand : SelectBuilder, INamedElement
     {
@@ -73,6 +89,22 @@ namespace Bonsai.Harp.CF
                 case WearCommandType.DigitalOutput1:
                     if (expression.Type != typeof(bool)) { expression = Expression.Convert(expression, typeof(bool)); }
                     return Expression.Call(typeof(WearCommand), "ProcessDigitalOutput1", null, expression);
+
+                case WearCommandType.StartCamera0:
+                    return Expression.Call(typeof(WearCommand), "ProcessStartCamera0", new[] { expression.Type }, expression);
+                case WearCommandType.StopCamera0:
+                    return Expression.Call(typeof(WearCommand), "ProcessStopCamera0", new[] { expression.Type }, expression);
+                case WearCommandType.StartCamera1:
+                    return Expression.Call(typeof(WearCommand), "ProcessStartCamera1", new[] { expression.Type }, expression);
+                case WearCommandType.StopCamera1:
+                    return Expression.Call(typeof(WearCommand), "ProcessStopCamera1", new[] { expression.Type }, expression);
+
+                case WearCommandType.CameraOutput0:
+                    if (expression.Type != typeof(bool)) { expression = Expression.Convert(expression, typeof(bool)); }
+                    return Expression.Call(typeof(WearCommand), "ProcessCameraOutput0", null, expression);
+                case WearCommandType.CameraOutput1:
+                    if (expression.Type != typeof(bool)) { expression = Expression.Convert(expression, typeof(bool)); }
+                    return Expression.Call(typeof(WearCommand), "ProcessCameraOutput1", null, expression);
 
                 default:
                     break;
@@ -115,6 +147,37 @@ namespace Bonsai.Harp.CF
         static HarpMessage ProcessDigitalOutput1(bool input)
         {
             return new HarpMessage(true, 2, 5, 39, 255, (byte)PayloadType.U8, (byte)(input ? 1 : 0), 0);
+        }
+
+
+        static HarpMessage ProcessStartCamera0<TSource>(TSource input)
+        {
+            return new HarpMessage(true, 2, 5, 77, 255, (byte)PayloadType.U8, 1, 0);
+        }
+
+        static HarpMessage ProcessStopCamera0<TSource>(TSource input)
+        {
+            return new HarpMessage(true, 2, 5, 77, 255, (byte)PayloadType.U8, 0, 0);
+        }
+
+        static HarpMessage ProcessStartCamera1<TSource>(TSource input)
+        {
+            return new HarpMessage(true, 2, 5, 82, 255, (byte)PayloadType.U8, 1, 0);
+        }
+
+        static HarpMessage ProcessStopCamera1<TSource>(TSource input)
+        {
+            return new HarpMessage(true, 2, 5, 82, 255, (byte)PayloadType.U8, 0, 0);
+        }
+
+        static HarpMessage ProcessCameraOutput0(bool input)
+        {
+            return new HarpMessage(true, 2, 5, 36, 255, (byte)PayloadType.U8, (byte)(input ? 1 : 0), 0);
+        }
+
+        static HarpMessage ProcessCameraOutput1(bool input)
+        {
+            return new HarpMessage(true, 2, 5, 37, 255, (byte)PayloadType.U8, (byte)(input ? 1 : 0), 0);
         }
     }
 }
