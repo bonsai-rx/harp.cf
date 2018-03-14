@@ -43,10 +43,10 @@ namespace Bonsai.Harp.CF
         "DigitalOutput0: Boolean\n" +
         "DigitalOutput1: Boolean\n" +
         "\n" +
-        "StartCamera0: Boolean\n" +
-        "StopCamera0: Boolean\n" +
-        "StartCamera1: Boolean\n" +
-        "StopCamera1: Boolean\n" +
+        "StartCamera0: Any\n" +
+        "StopCamera0: Any\n" +
+        "StartCamera1: Any\n" +
+        "StopCamera1: Any\n" +
         "\n" +
         "CameraOutput0: Boolean\n" +
         "CaemraOutput1: Boolean\n"
