@@ -81,6 +81,8 @@
     <Compile Include="SynchronizerEvent.cs" />
     <Compile Include="SynchronizerCommand.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="LoadCellsCommad.cs" />
+    <Compile Include="LoadCellsEvent.cs" />
     <Compile Include="WearEvent.cs" />
     <Compile Include="WearCommand.cs" />
   </ItemGroup>
