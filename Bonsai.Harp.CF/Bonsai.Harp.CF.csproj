@@ -76,6 +76,8 @@
     <Compile Include="BehaviorEvent.cs" />
     <Compile Include="CameraEvent.cs" />
     <Compile Include="CameraCommand.cs" />
+    <Compile Include="AudioSwitchCommand.cs" />
+    <Compile Include="AudioSwitchEvent.cs" />
     <Compile Include="MultiPwmEvent.cs" />
     <Compile Include="MultiPwmCommand.cs" />
     <Compile Include="SynchronizerEvent.cs" />
