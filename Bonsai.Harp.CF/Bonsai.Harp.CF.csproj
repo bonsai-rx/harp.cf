@@ -78,8 +78,10 @@
     <Compile Include="CameraCommand.cs" />
     <Compile Include="AudioSwitchCommand.cs" />
     <Compile Include="AudioSwitchEvent.cs" />
+    <Compile Include="RgbArrayCommad.cs" />
     <Compile Include="MultiPwmEvent.cs" />
     <Compile Include="MultiPwmCommand.cs" />
+    <Compile Include="RgbArrayEvent.cs" />
     <Compile Include="SynchronizerEvent.cs" />
     <Compile Include="SynchronizerCommand.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
