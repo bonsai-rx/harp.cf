@@ -14,6 +14,7 @@ namespace Bonsai.Harp.CF
     {
         Enable,
         Disable,
+        LatchNextUpdate,
         
         Update64,
         Update32Bus0,
@@ -37,6 +38,9 @@ namespace Bonsai.Harp.CF
         ToggleOutput3,
         ToggleOutput4,
 
+        PulsePeriod,
+        PulseRepetitions,
+
         RegisterSetOutputs,
         RegisterClearOutputs,
         RegisterToggleOutputs,
@@ -47,6 +51,7 @@ namespace Bonsai.Harp.CF
         "\n" +
         "Enable: Any\n" +
         "Disable: Any\n" +
+        "LatchNextUpdate: Any\n" +
         "\n" +
         "Update64: Array[64][3] (U8)\n" +
         "Update32Bus0: Array[32][3] (U8)\n" +
@@ -70,6 +75,9 @@ namespace Bonsai.Harp.CF
         "ToggleOutput3: Any\n" +
         "ToggleOutput4: Any\n" +
         "ToggleOutput5: Any\n" +
+        "\n" +
+        "PulsePeriod: Integer\n" +
+        "PulseRepetitions: Integer\n" +
         "\n" +
         "RegisterSetOutputs: Bitmask\n" +
         "RegisterClearOutputs: Bitmask\n" +
@@ -98,6 +106,8 @@ namespace Bonsai.Harp.CF
                     return Expression.Call(typeof(RgbArrayCommand), "ProcessEnable", new[] { expression.Type }, expression);
                 case RgbArrayCommandType.Disable:
                     return Expression.Call(typeof(RgbArrayCommand), "ProcessDisable", new[] { expression.Type }, expression);
+                case RgbArrayCommandType.LatchNextUpdate:
+                    return Expression.Call(typeof(RgbArrayCommand), "ProcessLatchNextUpdate", new[] { expression.Type }, expression);
 
                 case RgbArrayCommandType.Update64:
                     return Expression.Call(typeof(RgbArrayCommand), "ProcessUpdate64", null, expression);
@@ -139,6 +149,14 @@ namespace Bonsai.Harp.CF
                 case RgbArrayCommandType.ToggleOutput4:
                     return Expression.Call(typeof(RgbArrayCommand), "ProcessToggleOutput4", new[] { expression.Type }, expression);
 
+
+                case RgbArrayCommandType.PulsePeriod:
+                    if (expression.Type != typeof(byte)) { expression = Expression.Convert(expression, typeof(int)); }
+                    return Expression.Call(typeof(RgbArrayCommand), "ProcessPulsePeriod", null, expression);
+                case RgbArrayCommandType.PulseRepetitions:
+                    if (expression.Type != typeof(byte)) { expression = Expression.Convert(expression, typeof(int)); }
+                    return Expression.Call(typeof(RgbArrayCommand), "ProcessPulseRepetitions", null, expression);
+
                 case RgbArrayCommandType.RegisterSetOutputs:
                     if (expression.Type != typeof(byte)) { expression = Expression.Convert(expression, typeof(byte)); }
                     return Expression.Call(typeof(RgbArrayCommand), "ProcessRegisterSetOutputs", null, expression);
@@ -160,6 +178,7 @@ namespace Bonsai.Harp.CF
 
         static HarpMessage ProcessEnable<TSource>(TSource input)  { return new HarpMessage(true, 2, 5, 32, 255, (byte)PayloadType.U8, (1<<0), 0); }
         static HarpMessage ProcessDisable<TSource>(TSource input) { return new HarpMessage(true, 2, 5, 32, 255, (byte)PayloadType.U8, (1<<1), 0); }
+        static HarpMessage ProcessLatchNextUpdate<TSource>(TSource input) { return new HarpMessage(true, 2, 5, 43, 255, (byte)PayloadType.U8, 1, 0); }
 
         static HarpMessage ProcessUpdate64(byte[] input)
         {
@@ -328,7 +347,14 @@ namespace Bonsai.Harp.CF
         static HarpMessage ProcessToggleOutput2<TSource>(TSource input) { return new HarpMessage(true, 2, 5, 47, 255, (byte)PayloadType.U8,   4, 0); }
         static HarpMessage ProcessToggleOutput3<TSource>(TSource input) { return new HarpMessage(true, 2, 5, 47, 255, (byte)PayloadType.U8,   8, 0); }
         static HarpMessage ProcessToggleOutput4<TSource>(TSource input) { return new HarpMessage(true, 2, 5, 47, 255, (byte)PayloadType.U8,  16, 0); }
-        
+
+        static HarpMessage ProcessPulsePeriod(int input) {
+            return new HarpMessage(true, 2, 6, 49, 255, (byte)PayloadType.U16, (byte)(Convert.ToUInt16(input) & 255), (byte)((Convert.ToUInt16(input) >> 8) & 255), 0);
+        }
+        static HarpMessage ProcessPulseRepetitions(int input) {
+            return new HarpMessage(true, 2, 5, 50, 255, (byte)PayloadType.U8, (byte)input, 0);
+        }
+
         static HarpMessage ProcessRegisterSetOutputs(byte input) {
             return new HarpMessage(true, 2, 5, 45, 255, (byte)PayloadType.U8, input, 0);
         }
