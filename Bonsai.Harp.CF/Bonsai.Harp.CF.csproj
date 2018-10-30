@@ -72,6 +72,7 @@
   <ItemGroup>
     <Compile Include="ArchimedesEvent.cs" />
     <Compile Include="ArchimedesCommand.cs" />
+    <Compile Include="LedArrayCommand.cs" />
     <Compile Include="BehaviorCommand.cs" />
     <Compile Include="BehaviorEvent.cs" />
     <Compile Include="CameraEvent.cs" />
@@ -82,6 +83,7 @@
     <Compile Include="MultiPwmEvent.cs" />
     <Compile Include="MultiPwmCommand.cs" />
     <Compile Include="RgbArrayEvent.cs" />
+    <Compile Include="LedArrayEvent.cs" />
     <Compile Include="SynchronizerEvent.cs" />
     <Compile Include="SynchronizerCommand.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
