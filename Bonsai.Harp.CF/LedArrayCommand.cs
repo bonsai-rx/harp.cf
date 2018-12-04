@@ -52,8 +52,8 @@ namespace Bonsai.Harp.CF
         "SetOutput: Any\n" +
         "ClearOUtput: Any\n" +
         "\n" +
-        "SetAuxiliaryOutput,, : Any\n" +
-        "ClearAuxiliaryOutput,,,: Any\n" +
+        "SetAuxiliaryOutput: Any\n" +
+        "ClearAuxiliaryOutput: Any\n" +
         "\n" +
         "WriteIntensity: Integer\n" +
         "WriteAuxiliaryIntensity: Integer\n"
@@ -105,7 +105,7 @@ namespace Bonsai.Harp.CF
                 case LedArrayCommandType.SetAuxiliaryOutput:
                     return Expression.Call(typeof(LedArrayCommand), "ProcessSetAuxiliaryOutput", new[] { expression.Type }, expression, GetMask());
                 case LedArrayCommandType.ClearAuxiliaryOutput:
-                    return Expression.Call(typeof(LedArrayCommand), "ProcessAuxiliaryOutput", new[] { expression.Type }, expression, GetMask());
+                    return Expression.Call(typeof(LedArrayCommand), "ProcessClearAuxiliaryOutput", new[] { expression.Type }, expression, GetMask());
 
 
                 /************************************************************************/
