@@ -36,6 +36,10 @@ namespace Bonsai.Harp.CF
 
         WriteIntensity,
         WriteAuxiliaryIntensity,
+
+        WritePwmFrequency,
+        WritePwmDutyCycle,
+        WritePwmNumOfPulses,
     }
 
     [Description(
@@ -56,7 +60,11 @@ namespace Bonsai.Harp.CF
         "ClearAuxiliaryOutput: Any\n" +
         "\n" +
         "WriteIntensity: Integer\n" +
-        "WriteAuxiliaryIntensity: Integer\n"
+        "WriteAuxiliaryIntensity: Integer\n" +
+        "\n" +
+        "WritePwmFrequency: Float\n" +
+        "WritePwmDutyCycle: Float\n" +
+        "WritePwmNumOfPulses: Integer\n"
     )]
 
     public class LedArrayCommand : SelectBuilder, INamedElement
@@ -118,6 +126,19 @@ namespace Bonsai.Harp.CF
                     if (expression.Type != typeof(int)) { expression = Expression.Convert(expression, typeof(int)); }
                     return Expression.Call(typeof(LedArrayCommand), "ProcessWriteAuxiliaryIntensity", null, expression, GetMask());
 
+                /************************************************************************/
+                /* PWM                                                                  */
+                /************************************************************************/
+                case LedArrayCommandType.WritePwmFrequency:
+                    if (expression.Type != typeof(float)) { expression = Expression.Convert(expression, typeof(float)); }
+                    return Expression.Call(typeof(LedArrayCommand), "ProcessWritePwmFrequency", null, expression, GetMask());
+                case LedArrayCommandType.WritePwmDutyCycle:
+                    if (expression.Type != typeof(float)) { expression = Expression.Convert(expression, typeof(float)); }
+                    return Expression.Call(typeof(LedArrayCommand), "ProcessWritePwmDutyCycle", null, expression, GetMask());
+                case LedArrayCommandType.WritePwmNumOfPulses:
+                    if (expression.Type != typeof(int)) { expression = Expression.Convert(expression, typeof(int)); }
+                    return Expression.Call(typeof(LedArrayCommand), "ProcessWritePwmNumOfPulses", null, expression, GetMask());
+
                 default:
                     break;
             }
@@ -147,6 +168,11 @@ namespace Bonsai.Harp.CF
         static HarpMessage createFrameU16(byte registerAddress, int content)
         {
             return new HarpMessage(true, 2, 6, registerAddress, 255, (byte)PayloadType.U16, (byte)(content & 255), (byte)((content >> 8) & 255), 0);
+        }
+        static HarpMessage createFrameF32(byte registerAddress, float content)
+        {
+            var byteArray = BitConverter.GetBytes(content);
+            return new HarpMessage(true, 2, 8, registerAddress, 255, (byte)PayloadType.Float, byteArray[0], byteArray[1], byteArray[2], byteArray[3], 0);
         }
 
         /************************************************************************/
@@ -189,6 +215,50 @@ namespace Bonsai.Harp.CF
             if (input > 120) input = 120;
 
             return createFrameU8(62, (byte)input);
+        }
+
+        /************************************************************************/
+        /* PWM                                                                  */
+        /************************************************************************/
+        static HarpMessage ProcessWritePwmFrequency(float input, int bMask)
+        {
+            if (input <= 0)
+                throw new InvalidOperationException("Invalid frequency. Must be above 0.");
+
+            if (GetIndexBitMask(bMask) == ((byte)(LedArrayIndexes.Index0 | LedArrayIndexes.Index1)))
+                throw new InvalidOperationException("Invalid Mask selection. Only one option can be selected.");
+
+            if (GetIndexBitMask(bMask) == (byte)LedArrayIndexes.Index0) return createFrameF32(41, input);
+            if (GetIndexBitMask(bMask) == (byte)LedArrayIndexes.Index1) return createFrameF32(49, input);
+
+            throw new InvalidOperationException("Invalid Mask selection");
+        }
+        static HarpMessage ProcessWritePwmDutyCycle(float input, int bMask)
+        {
+            if (input < 0) throw new InvalidOperationException("Invalid duty cycle. Must be above or equal to 0.");
+            if (input > 100) throw new InvalidOperationException("Invalid duty cycle. Must be bellow or equal to 100.");
+
+            if (GetIndexBitMask(bMask) == ((byte)(LedArrayIndexes.Index0 | LedArrayIndexes.Index1)))
+                throw new InvalidOperationException("Invalid Mask selection. Only one option can be selected.");
+
+            if (GetIndexBitMask(bMask) == (byte)LedArrayIndexes.Index0) return createFrameF32(42, input);
+            if (GetIndexBitMask(bMask) == (byte)LedArrayIndexes.Index1) return createFrameF32(50, input);
+
+            throw new InvalidOperationException("Invalid Mask selection");
+        }
+        static HarpMessage ProcessWritePwmNumOfPulses(int input, int bMask)
+        {
+            if (input > Math.Pow(2, 16) - 1) input = (int)Math.Pow(2, 16) - 1;
+            if (input < 1)
+                throw new InvalidOperationException("Invalid NumberOfPulses. Must be above 0.");
+
+            if (GetIndexBitMask(bMask) == ((byte)(LedArrayIndexes.Index0 | LedArrayIndexes.Index1)))
+                throw new InvalidOperationException("Invalid Mask selection. Only one option can be selected.");
+
+            if (GetIndexBitMask(bMask) == (byte)LedArrayIndexes.Index0) return createFrameU16(41, input);
+            if (GetIndexBitMask(bMask) == (byte)LedArrayIndexes.Index1) return createFrameU16(49, input);
+
+            throw new InvalidOperationException("Invalid Mask selection");
         }
     }
 }
