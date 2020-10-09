@@ -16,6 +16,12 @@ namespace Bonsai.Harp.CF
 
         /* Event: DIR_STATE */
         Direction,
+
+        /* Event: SW_FORWARD_STATE */
+        SwitchForward,
+
+        /* Event: SW_REVERSE_STATE */
+        SwitchReverse,
     }
 
     [TypeDescriptionProvider(typeof(DeviceTypeDescriptionProvider<WearEvent>))]
@@ -36,6 +42,8 @@ namespace Bonsai.Harp.CF
                 {
                     case SyringePumpEventType.Step: return "The state of the STEP motor controller pin.";
                     case SyringePumpEventType.Direction: return "The state of the direction of motor's movement.";
+                    case SyringePumpEventType.SwitchForward: return "The state of the forward switch.";
+                    case SyringePumpEventType.SwitchReverse: return "The state of the reverse switch.";
                     default: return null;
                 }
             }
@@ -51,6 +59,10 @@ namespace Bonsai.Harp.CF
                     return Expression.Call(typeof(SyringePumpEvent), nameof(ProcessStep), null, expression);
                 case SyringePumpEventType.Direction:
                     return Expression.Call(typeof(SyringePumpEvent), nameof(ProcessDirection), null, expression);
+                case SyringePumpEventType.SwitchForward:
+                    return Expression.Call(typeof(SyringePumpEvent), nameof(ProcessSwitchForward), null, expression);
+                case SyringePumpEventType.SwitchReverse:
+                    return Expression.Call(typeof(SyringePumpEvent), nameof(ProcessSwitchReverse), null, expression);
                 default:
                     break;
             }
@@ -58,20 +70,24 @@ namespace Bonsai.Harp.CF
             return expression;
         }
 
-        /************************************************************************/
-        /* Register: STEP_STATE                                                 */
-        /************************************************************************/
         static IObservable<bool> ProcessStep(IObservable<HarpMessage> source)
         {
             return source.Event(address: 34).Select(input => input.GetPayloadByte() != 0);
         }
 
-        /************************************************************************/
-        /* Register: DIR_STATE                                                  */
-        /************************************************************************/
         static IObservable<bool> ProcessDirection(IObservable<HarpMessage> source)
         {
             return source.Event(address: 35).Select(input => input.GetPayloadByte() != 0);
+        }
+
+        static IObservable<bool> ProcessSwitchForward(IObservable<HarpMessage> source)
+        {
+            return source.Event(address: 36).Select(input => input.GetPayloadByte() != 0);
+        }
+
+        static IObservable<bool> ProcessSwitchReverse(IObservable<HarpMessage> source)
+        {
+            return source.Event(address: 37).Select(input => input.GetPayloadByte() != 0);
         }
     }
 }
