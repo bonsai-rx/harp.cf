@@ -7,6 +7,9 @@ namespace Bonsai.Harp.CF
 {
     public enum SyringePumpCommandType : byte
     {
+        EnableMotorDriver,
+        DisableMotorDriver,
+
         StartProtocol,
         StopProtocol,
     }
@@ -27,6 +30,8 @@ namespace Bonsai.Harp.CF
             {
                 switch(Type)
                 {
+                    case SyringePumpCommandType.EnableMotorDriver: return "Enables the motor on the Syringe Pump";
+                    case SyringePumpCommandType.DisableMotorDriver: return "Disables the motor on the Syringe Pump";
                     case SyringePumpCommandType.StartProtocol: return "Start the configured protocol on the Syringe Pump";
                     case SyringePumpCommandType.StopProtocol: return "Stop the running protocol on the Syringe Pump";
 
@@ -39,6 +44,10 @@ namespace Bonsai.Harp.CF
         {
             switch (Type)
             {
+                case SyringePumpCommandType.EnableMotorDriver:
+                    return Expression.Call(typeof(SyringePumpCommand), nameof(ProcessEnableMotorDriver), null);
+                case SyringePumpCommandType.DisableMotorDriver:
+                    return Expression.Call(typeof(SyringePumpCommand), nameof(ProcessDisableMotorDriver), null);
                 case SyringePumpCommandType.StartProtocol:
                     return Expression.Call(typeof(SyringePumpCommand), nameof(ProcessStartProtocol), null);
                 case SyringePumpCommandType.StopProtocol:
@@ -48,6 +57,8 @@ namespace Bonsai.Harp.CF
             }
         }
 
+        static HarpMessage ProcessEnableMotorDriver() => HarpCommand.WriteByte(address: 32, 1);
+        static HarpMessage ProcessDisableMotorDriver() => HarpCommand.WriteByte(address: 32, 0);
         static HarpMessage ProcessStartProtocol() => HarpCommand.WriteByte(address: 33, 1);
         static HarpMessage ProcessStopProtocol() => HarpCommand.WriteByte(address: 33, 0);
     }
