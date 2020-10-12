@@ -21,6 +21,9 @@ namespace Bonsai.Harp.CF
         ProtocolFlowRate,
         ProtocolVolume,
         ProtocolType,
+
+        CalibrationValue1,
+        CalibrationValue2
     }
 
     [TypeDescriptionProvider(typeof(DeviceTypeDescriptionProvider<SyringePumpCommand>))]
@@ -50,6 +53,9 @@ namespace Bonsai.Harp.CF
                     case SyringePumpCommandType.ProtocolFlowRate: return "Set the flow rate of the protocol [0.5;2000.0]";
                     case SyringePumpCommandType.ProtocolVolume: return "Set the volume in uL of the protocol [0.5;2000.0]";
                     case SyringePumpCommandType.ProtocolType: return "Set the type of the protocol. False for step-based and True to volume-based protocol.";
+                    case SyringePumpCommandType.CalibrationValue1: return "Set the calibration value 1 for protocol use.";
+                    case SyringePumpCommandType.CalibrationValue2: return "Set the calibration value 1 for protocol use.";
+
                     default: return null;
                 }
             }
@@ -88,6 +94,12 @@ namespace Bonsai.Harp.CF
                 case SyringePumpCommandType.ProtocolType:
                     if(expression.Type != typeof(bool)) { expression = Expression.Convert(expression, typeof(bool)); }
                     return Expression.Call(typeof(SyringePumpCommand), nameof(ProcessProtocolType), null, expression);
+                case SyringePumpCommandType.CalibrationValue1:
+                    if (expression.Type != typeof(byte)) { expression = Expression.Convert(expression, typeof(byte)); }
+                    return Expression.Call(typeof(SyringePumpCommand), nameof(ProcessCalibrationValue1), null, expression);
+                case SyringePumpCommandType.CalibrationValue2:
+                    if (expression.Type != typeof(byte)) { expression = Expression.Convert(expression, typeof(byte)); }
+                    return Expression.Call(typeof(SyringePumpCommand), nameof(ProcessCalibrationValue2), null, expression);
                 default:
                     throw new InvalidOperationException("Invalid selection or not supported yet.");
             }
@@ -133,5 +145,7 @@ namespace Bonsai.Harp.CF
         }
 
         static HarpMessage ProcessProtocolType(bool input) => HarpCommand.WriteByte(address: 49, (byte)(input? 1: 0));
+        static HarpMessage ProcessCalibrationValue1(byte input) => HarpCommand.WriteByte(address: 50, input);
+        static HarpMessage ProcessCalibrationValue2(byte input) => HarpCommand.WriteByte(address: 51, input);
     }
 }
