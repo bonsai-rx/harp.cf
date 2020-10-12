@@ -15,6 +15,9 @@ namespace Bonsai.Harp.CF
 
         SetDigitalOutputs,
         ClearDigitalOutputs,
+
+        ProtocolNumberOfSteps,
+        ProtocolStepsPeriod
     }
 
     [TypeDescriptionProvider(typeof(DeviceTypeDescriptionProvider<SyringePumpCommand>))]
@@ -39,6 +42,8 @@ namespace Bonsai.Harp.CF
                     case SyringePumpCommandType.StopProtocol: return "Stop the running protocol on the Syringe Pump";
                     case SyringePumpCommandType.SetDigitalOutputs: return "Set the state of digital output 0 using the input boolean value.";
                     case SyringePumpCommandType.ClearDigitalOutputs: return "Set the state of digital output 1 using the input boolean value.";
+                    case SyringePumpCommandType.ProtocolNumberOfSteps: return "Set the number of steps to run in the protocol [1;65535]";
+                    case SyringePumpCommandType.ProtocolStepsPeriod: return "Set the period in ms between each step on the protocol [1;65535]";
 
                     default: return null;
                 }
@@ -63,6 +68,12 @@ namespace Bonsai.Harp.CF
                 case SyringePumpCommandType.ClearDigitalOutputs:
                     if (expression.Type != typeof(byte)) { expression = Expression.Convert(expression, typeof(byte)); }
                     return Expression.Call(typeof(SyringePumpCommand), nameof(ProcessSetDigitalOutputs), null, expression);
+                case SyringePumpCommandType.ProtocolNumberOfSteps:
+                    if (expression.Type != typeof(ushort)) { expression = Expression.Convert(expression, typeof(ushort)); }
+                    return Expression.Call(typeof(SyringePumpCommand), nameof(ProcessProtocolNumberOfSteps), null, expression);
+                case SyringePumpCommandType.ProtocolStepsPeriod:
+                    if (expression.Type != typeof(ushort)) { expression = Expression.Convert(expression, typeof(ushort)); }
+                    return Expression.Call(typeof(SyringePumpCommand), nameof(ProcessProtocolStepsPeriod), null, expression);
                 default:
                     throw new InvalidOperationException("Invalid selection or not supported yet.");
             }
@@ -74,5 +85,22 @@ namespace Bonsai.Harp.CF
         static HarpMessage ProcessStopProtocol() => HarpCommand.WriteByte(address: 33, 0);
         static HarpMessage ProcessSetDigitalOutputs(byte input) => HarpCommand.WriteByte(address: 39, input);
         static HarpMessage ProcessClearDigitalOutputs(byte input) => HarpCommand.WriteByte(address: 40, input);
+
+        static HarpMessage ProcessProtocolNumberOfSteps(ushort input)
+        {
+            if(input <= 0)
+                throw new InvalidOperationException("Invalid number of steps. Must be above 0.");
+
+            return HarpCommand.WriteUInt16(address: 45, input);
+        }
+
+        static HarpMessage ProcessProtocolStepsPeriod(ushort input)
+        {
+            if(input <= 0)
+                throw new InvalidOperationException("Invalid number of steps. Must be above 0.");
+
+            return HarpCommand.WriteUInt16(address: 47, input);
+        }
+
     }
 }
