@@ -19,7 +19,8 @@ namespace Bonsai.Harp.CF
         ProtocolNumberOfSteps,
         ProtocolStepsPeriod,
         ProtocolFlowRate,
-        ProtocolVolume
+        ProtocolVolume,
+        ProtocolType,
     }
 
     [TypeDescriptionProvider(typeof(DeviceTypeDescriptionProvider<SyringePumpCommand>))]
@@ -48,6 +49,7 @@ namespace Bonsai.Harp.CF
                     case SyringePumpCommandType.ProtocolStepsPeriod: return "Set the period in ms between each step on the protocol [1;65535]";
                     case SyringePumpCommandType.ProtocolFlowRate: return "Set the flow rate of the protocol [0.5;2000.0]";
                     case SyringePumpCommandType.ProtocolVolume: return "Set the volume in uL of the protocol [0.5;2000.0]";
+                    case SyringePumpCommandType.ProtocolType: return "Set the type of the protocol. False for step-based and True to volume-based protocol.";
                     default: return null;
                 }
             }
@@ -83,6 +85,9 @@ namespace Bonsai.Harp.CF
                 case SyringePumpCommandType.ProtocolVolume:
                     if (expression.Type != typeof(float)) { expression = Expression.Convert(expression, typeof(float)); }
                     return Expression.Call(typeof(SyringePumpCommand), nameof(ProcessProtocolVolume), null, expression);
+                case SyringePumpCommandType.ProtocolType:
+                    if(expression.Type != typeof(bool)) { expression = Expression.Convert(expression, typeof(bool)); }
+                    return Expression.Call(typeof(SyringePumpCommand), nameof(ProcessProtocolType), null, expression);
                 default:
                     throw new InvalidOperationException("Invalid selection or not supported yet.");
             }
@@ -126,5 +131,7 @@ namespace Bonsai.Harp.CF
 
             return HarpCommand.WriteSingle(address: 48, input);
         }
+
+        static HarpMessage ProcessProtocolType(bool input) => HarpCommand.WriteByte(address: 49, (byte)(input? 1: 0));
     }
 }
