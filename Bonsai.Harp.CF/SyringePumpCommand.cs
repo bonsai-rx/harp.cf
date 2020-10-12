@@ -67,7 +67,7 @@ namespace Bonsai.Harp.CF
                     return Expression.Call(typeof(SyringePumpCommand), nameof(ProcessSetDigitalOutputs), null, expression);
                 case SyringePumpCommandType.ClearDigitalOutputs:
                     if (expression.Type != typeof(byte)) { expression = Expression.Convert(expression, typeof(byte)); }
-                    return Expression.Call(typeof(SyringePumpCommand), nameof(ProcessSetDigitalOutputs), null, expression);
+                    return Expression.Call(typeof(SyringePumpCommand), nameof(ProcessClearDigitalOutputs), null, expression);
                 case SyringePumpCommandType.ProtocolNumberOfSteps:
                     if (expression.Type != typeof(ushort)) { expression = Expression.Convert(expression, typeof(ushort)); }
                     return Expression.Call(typeof(SyringePumpCommand), nameof(ProcessProtocolNumberOfSteps), null, expression);
