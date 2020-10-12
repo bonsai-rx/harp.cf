@@ -17,7 +17,9 @@ namespace Bonsai.Harp.CF
         ClearDigitalOutputs,
 
         ProtocolNumberOfSteps,
-        ProtocolStepsPeriod
+        ProtocolStepsPeriod,
+        ProtocolFlowRate,
+        ProtocolVolume
     }
 
     [TypeDescriptionProvider(typeof(DeviceTypeDescriptionProvider<SyringePumpCommand>))]
@@ -44,7 +46,8 @@ namespace Bonsai.Harp.CF
                     case SyringePumpCommandType.ClearDigitalOutputs: return "Set the state of digital output 1 using the input boolean value.";
                     case SyringePumpCommandType.ProtocolNumberOfSteps: return "Set the number of steps to run in the protocol [1;65535]";
                     case SyringePumpCommandType.ProtocolStepsPeriod: return "Set the period in ms between each step on the protocol [1;65535]";
-
+                    case SyringePumpCommandType.ProtocolFlowRate: return "Set the flow rate of the protocol [0.5;2000.0]";
+                    case SyringePumpCommandType.ProtocolVolume: return "Set the volume in uL of the protocol [0.5;2000.0]";
                     default: return null;
                 }
             }
@@ -74,6 +77,12 @@ namespace Bonsai.Harp.CF
                 case SyringePumpCommandType.ProtocolStepsPeriod:
                     if (expression.Type != typeof(ushort)) { expression = Expression.Convert(expression, typeof(ushort)); }
                     return Expression.Call(typeof(SyringePumpCommand), nameof(ProcessProtocolStepsPeriod), null, expression);
+                case SyringePumpCommandType.ProtocolFlowRate:
+                    if (expression.Type != typeof(float)) { expression = Expression.Convert(expression, typeof(float)); }
+                    return Expression.Call(typeof(SyringePumpCommand), nameof(ProcessProtocolFlowRate), null, expression);
+                case SyringePumpCommandType.ProtocolVolume:
+                    if (expression.Type != typeof(float)) { expression = Expression.Convert(expression, typeof(float)); }
+                    return Expression.Call(typeof(SyringePumpCommand), nameof(ProcessProtocolVolume), null, expression);
                 default:
                     throw new InvalidOperationException("Invalid selection or not supported yet.");
             }
@@ -97,10 +106,25 @@ namespace Bonsai.Harp.CF
         static HarpMessage ProcessProtocolStepsPeriod(ushort input)
         {
             if(input <= 0)
-                throw new InvalidOperationException("Invalid number of steps. Must be above 0.");
+                throw new InvalidOperationException("Invalid steps period. Must be above 0.");
 
             return HarpCommand.WriteUInt16(address: 47, input);
         }
 
+        static HarpMessage ProcessProtocolFlowRate(float input)
+        {
+            if(input < 0.5f || input > 2000.0f)
+                throw new InvalidOperationException("Invalid flow rate value. Must be greater or equal to 0.5 and less or equal than 2000.");
+
+            return HarpCommand.WriteSingle(address: 46, input);
+        }
+
+        static HarpMessage ProcessProtocolVolume(float input)
+        {
+            if(input < 0.5f || input > 2000.0f)
+                throw new InvalidOperationException("Invalid volume value. Must be greater or equal to 0.5 and less or equal than 2000.");
+
+            return HarpCommand.WriteSingle(address: 48, input);
+        }
     }
 }
