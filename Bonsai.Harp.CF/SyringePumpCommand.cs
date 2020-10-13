@@ -16,6 +16,8 @@ namespace Bonsai.Harp.CF
         SetDigitalOutputs,
         ClearDigitalOutputs,
 
+        MotorMicrostep,
+
         ProtocolNumberOfSteps,
         ProtocolStepsPeriod,
         ProtocolFlowRate,
@@ -26,6 +28,15 @@ namespace Bonsai.Harp.CF
         CalibrationValue2
     }
 
+    public enum MotorMicrostep : byte
+    {
+        Full = (0 << 0),
+        Half = (1 << 0),
+        Quarter = (2 << 0),
+        Eighth = (3 << 0),
+        Sixteenth = (4 << 0)
+    }
+
     [TypeDescriptionProvider(typeof(DeviceTypeDescriptionProvider<SyringePumpCommand>))]
     [Description("Creates standard command messages available to the Syringe Pump device")]
     public class SyringePumpCommand : SelectBuilder, INamedElement
@@ -33,6 +44,8 @@ namespace Bonsai.Harp.CF
         [RefreshProperties(RefreshProperties.All)]
         [Description("Specifies which command to send to the Syringe Pump device.")]
         public SyringePumpCommandType Type { get; set; } = SyringePumpCommandType.StartProtocol;
+
+        public MotorMicrostep Mask { get; set; } = MotorMicrostep.Full;
 
         string INamedElement.Name => $"SyringePump.{Type}";
 
@@ -48,13 +61,14 @@ namespace Bonsai.Harp.CF
                     case SyringePumpCommandType.StopProtocol: return "Stop the running protocol on the Syringe Pump";
                     case SyringePumpCommandType.SetDigitalOutputs: return "Set the state of digital output 0 using the input boolean value.";
                     case SyringePumpCommandType.ClearDigitalOutputs: return "Set the state of digital output 1 using the input boolean value.";
+                    case SyringePumpCommandType.MotorMicrostep: return "Set the motor microstep value.";
                     case SyringePumpCommandType.ProtocolNumberOfSteps: return "Set the number of steps to run in the protocol [1;65535]";
                     case SyringePumpCommandType.ProtocolStepsPeriod: return "Set the period in ms between each step on the protocol [1;65535]";
                     case SyringePumpCommandType.ProtocolFlowRate: return "Set the flow rate of the protocol [0.5;2000.0]";
                     case SyringePumpCommandType.ProtocolVolume: return "Set the volume in uL of the protocol [0.5;2000.0]";
                     case SyringePumpCommandType.ProtocolType: return "Set the type of the protocol. False for step-based and True to volume-based protocol.";
                     case SyringePumpCommandType.CalibrationValue1: return "Set the calibration value 1 for protocol use.";
-                    case SyringePumpCommandType.CalibrationValue2: return "Set the calibration value 1 for protocol use.";
+                    case SyringePumpCommandType.CalibrationValue2: return "Set the calibration value 2 for protocol use.";
 
                     default: return null;
                 }
@@ -79,6 +93,9 @@ namespace Bonsai.Harp.CF
                 case SyringePumpCommandType.ClearDigitalOutputs:
                     if (expression.Type != typeof(byte)) { expression = Expression.Convert(expression, typeof(byte)); }
                     return Expression.Call(typeof(SyringePumpCommand), nameof(ProcessClearDigitalOutputs), null, expression);
+                case SyringePumpCommandType.MotorMicrostep:
+                    if (expression.Type != typeof(MotorMicrostep)) { expression = Expression.Convert(expression, typeof(MotorMicrostep)); }
+                    return Expression.Call(typeof(SyringePumpCommand), nameof(ProcessMotorMicrostep), null, expression);
                 case SyringePumpCommandType.ProtocolNumberOfSteps:
                     if (expression.Type != typeof(ushort)) { expression = Expression.Convert(expression, typeof(ushort)); }
                     return Expression.Call(typeof(SyringePumpCommand), nameof(ProcessProtocolNumberOfSteps), null, expression);
@@ -111,6 +128,13 @@ namespace Bonsai.Harp.CF
         static HarpMessage ProcessStopProtocol() => HarpCommand.WriteByte(address: 33, 0);
         static HarpMessage ProcessSetDigitalOutputs(byte input) => HarpCommand.WriteByte(address: 39, input);
         static HarpMessage ProcessClearDigitalOutputs(byte input) => HarpCommand.WriteByte(address: 40, input);
+        static HarpMessage ProcessMotorMicrostep(MotorMicrostep input)
+        {
+            bool exists = Enum.IsDefined(typeof(MotorMicrostep), input);
+            if(!exists) throw new InvalidOperationException("Invalid Mask selection. Please select an appropriate value.");
+
+            return HarpCommand.WriteByte(address: 44, (byte)input);
+        }
 
         static HarpMessage ProcessProtocolNumberOfSteps(ushort input)
         {
