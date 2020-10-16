@@ -5,7 +5,7 @@
     <Description>Bonsai Library for data acquisition and control of Champalimaud Foundation devices implementing the Harp protocol.</Description>
     <PackageTags>Bonsai Rx Harp Champalimaud Foundation Hardware</PackageTags>
     <TargetFramework>net472</TargetFramework>
-    <Version>1.7.0</Version>
+    <Version>1.7.0-preview1</Version>
   </PropertyGroup>
 
   <ItemGroup>
