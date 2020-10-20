@@ -26,7 +26,7 @@ namespace Bonsai.Harp.CF
         Input
     }
 
-    [TypeDescriptionProvider(typeof(DeviceTypeDescriptionProvider<WearEvent>))]
+    [TypeDescriptionProvider(typeof(DeviceTypeDescriptionProvider<SyringePumpEvent>))]
     [Description("Filters and selects event messages reported by the Syringe Pump device.")]
     public class SyringePumpEvent : SingleArgumentExpressionBuilder, INamedElement
     {
