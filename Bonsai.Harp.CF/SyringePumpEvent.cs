@@ -4,15 +4,14 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reactive.Linq;
-using TResult = System.String;
 using System.ComponentModel;
 
 namespace Bonsai.Harp.CF
 {
-    public enum SyringePumpEventType: byte
+    public enum SyringePumpEventType : byte
     {
         /* Event: STEP_STATE */
-        Step = 0,
+        Step,
 
         /* Event: DIR_STATE */
         Direction,

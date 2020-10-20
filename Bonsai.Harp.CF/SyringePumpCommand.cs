@@ -88,7 +88,7 @@ namespace Bonsai.Harp.CF
                 case SyringePumpCommandType.StopProtocol:
                     return Expression.Call(typeof(SyringePumpCommand), nameof(ProcessStopProtocol), null);
                 case SyringePumpCommandType.SetDigitalOutputs:
-                    if(expression.Type != typeof(byte)) { expression = Expression.Convert(expression, typeof(byte)); }
+                    if (expression.Type != typeof(byte)) { expression = Expression.Convert(expression, typeof(byte)); }
                     return Expression.Call(typeof(SyringePumpCommand), nameof(ProcessSetDigitalOutputs), null, expression);
                 case SyringePumpCommandType.ClearDigitalOutputs:
                     if (expression.Type != typeof(byte)) { expression = Expression.Convert(expression, typeof(byte)); }
@@ -109,7 +109,7 @@ namespace Bonsai.Harp.CF
                     if (expression.Type != typeof(float)) { expression = Expression.Convert(expression, typeof(float)); }
                     return Expression.Call(typeof(SyringePumpCommand), nameof(ProcessProtocolVolume), null, expression);
                 case SyringePumpCommandType.ProtocolType:
-                    if(expression.Type != typeof(bool)) { expression = Expression.Convert(expression, typeof(bool)); }
+                    if (expression.Type != typeof(bool)) { expression = Expression.Convert(expression, typeof(bool)); }
                     return Expression.Call(typeof(SyringePumpCommand), nameof(ProcessProtocolType), null, expression);
                 case SyringePumpCommandType.CalibrationValue1:
                     if (expression.Type != typeof(byte)) { expression = Expression.Convert(expression, typeof(byte)); }
@@ -131,14 +131,15 @@ namespace Bonsai.Harp.CF
         static HarpMessage ProcessMotorMicrostep(MotorMicrostep input)
         {
             bool exists = Enum.IsDefined(typeof(MotorMicrostep), input);
-            if(!exists) throw new InvalidOperationException("Invalid Mask selection. Please select an appropriate value.");
+            if (!exists)
+                throw new InvalidOperationException("Invalid Mask selection. Please select an appropriate value.");
 
             return HarpCommand.WriteByte(address: 44, (byte)input);
         }
 
         static HarpMessage ProcessProtocolNumberOfSteps(ushort input)
         {
-            if(input <= 0)
+            if (input <= 0)
                 throw new InvalidOperationException("Invalid number of steps. Must be above 0.");
 
             return HarpCommand.WriteUInt16(address: 45, input);
@@ -146,7 +147,7 @@ namespace Bonsai.Harp.CF
 
         static HarpMessage ProcessProtocolStepsPeriod(ushort input)
         {
-            if(input <= 0)
+            if (input <= 0)
                 throw new InvalidOperationException("Invalid steps period. Must be above 0.");
 
             return HarpCommand.WriteUInt16(address: 47, input);
@@ -154,7 +155,7 @@ namespace Bonsai.Harp.CF
 
         static HarpMessage ProcessProtocolFlowRate(float input)
         {
-            if(input < 0.5f || input > 2000.0f)
+            if (input < 0.5f || input > 2000.0f)
                 throw new InvalidOperationException("Invalid flow rate value. Must be greater or equal to 0.5 and less or equal than 2000.");
 
             return HarpCommand.WriteSingle(address: 46, input);
@@ -162,7 +163,7 @@ namespace Bonsai.Harp.CF
 
         static HarpMessage ProcessProtocolVolume(float input)
         {
-            if(input < 0.5f || input > 2000.0f)
+            if (input < 0.5f || input > 2000.0f)
                 throw new InvalidOperationException("Invalid volume value. Must be greater or equal to 0.5 and less or equal than 2000.");
 
             return HarpCommand.WriteSingle(address: 48, input);
