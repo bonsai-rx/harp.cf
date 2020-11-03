@@ -7,8 +7,7 @@ namespace Bonsai.Harp.CF
 {
     public enum SyringePumpCommandType : byte
     {
-        EnableMotorDriver,
-        DisableMotorDriver,
+        SetMotorDriver,
 
         SetDirection,
 
@@ -57,8 +56,7 @@ namespace Bonsai.Harp.CF
             {
                 switch(Type)
                 {
-                    case SyringePumpCommandType.EnableMotorDriver: return "Enables the motor on the Syringe Pump";
-                    case SyringePumpCommandType.DisableMotorDriver: return "Disables the motor on the Syringe Pump";
+                    case SyringePumpCommandType.SetMotorDriver: return "Enables/disables the motor on the Syringe Pump. Expects a boolean. 'true' enables the motor, 'false' disables the motor.";
                     case SyringePumpCommandType.SetDirection: return "Sets the direction. Expects a boolean. 'true' will set the direction to FORWARD, 'false' will set the direction to REVERSE.";
                     case SyringePumpCommandType.StartProtocol: return "Start the configured protocol on the Syringe Pump";
                     case SyringePumpCommandType.StopProtocol: return "Stop the running protocol on the Syringe Pump";
@@ -82,10 +80,9 @@ namespace Bonsai.Harp.CF
         {
             switch (Type)
             {
-                case SyringePumpCommandType.EnableMotorDriver:
-                    return Expression.Call(typeof(SyringePumpCommand), nameof(ProcessEnableMotorDriver), null);
-                case SyringePumpCommandType.DisableMotorDriver:
-                    return Expression.Call(typeof(SyringePumpCommand), nameof(ProcessDisableMotorDriver), null);
+                case SyringePumpCommandType.SetMotorDriver:
+                    if (expression.Type != typeof(bool)) { expression = Expression.Convert(expression, typeof(bool)); }
+                    return Expression.Call(typeof(SyringePumpCommand), nameof(ProcessSetMotorDriver), null, expression);
                 case SyringePumpCommandType.SetDirection:
                     if (expression.Type != typeof(bool)) { expression = Expression.Convert(expression, typeof(bool)); }
                     return Expression.Call(typeof(SyringePumpCommand), nameof(ProcessSetDirection), null, expression);
@@ -128,8 +125,7 @@ namespace Bonsai.Harp.CF
             }
         }
 
-        static HarpMessage ProcessEnableMotorDriver() => HarpCommand.WriteByte(address: 32, 1);
-        static HarpMessage ProcessDisableMotorDriver() => HarpCommand.WriteByte(address: 32, 0);
+        static HarpMessage ProcessSetMotorDriver(bool input) => HarpCommand.WriteByte(32, (byte) (input ? 1 : 0));
         static HarpMessage ProcessSetDirection(bool input) => HarpCommand.WriteByte(35, (byte) (input ? 1 : 0));
         static HarpMessage ProcessStartProtocol() => HarpCommand.WriteByte(address: 33, 1);
         static HarpMessage ProcessStopProtocol() => HarpCommand.WriteByte(address: 33, 0);
