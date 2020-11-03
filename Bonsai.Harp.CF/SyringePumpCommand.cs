@@ -10,6 +10,8 @@ namespace Bonsai.Harp.CF
         EnableMotorDriver,
         DisableMotorDriver,
 
+        SetDirection,
+
         StartProtocol,
         StopProtocol,
 
@@ -57,6 +59,7 @@ namespace Bonsai.Harp.CF
                 {
                     case SyringePumpCommandType.EnableMotorDriver: return "Enables the motor on the Syringe Pump";
                     case SyringePumpCommandType.DisableMotorDriver: return "Disables the motor on the Syringe Pump";
+                    case SyringePumpCommandType.SetDirection: return "Sets the direction. Expects a boolean. 'true' will set the direction to FORWARD, 'false' will set the direction to REVERSE.";
                     case SyringePumpCommandType.StartProtocol: return "Start the configured protocol on the Syringe Pump";
                     case SyringePumpCommandType.StopProtocol: return "Stop the running protocol on the Syringe Pump";
                     case SyringePumpCommandType.SetDigitalOutputs: return "Set the state of digital output 0 using the input boolean value.";
@@ -83,6 +86,9 @@ namespace Bonsai.Harp.CF
                     return Expression.Call(typeof(SyringePumpCommand), nameof(ProcessEnableMotorDriver), null);
                 case SyringePumpCommandType.DisableMotorDriver:
                     return Expression.Call(typeof(SyringePumpCommand), nameof(ProcessDisableMotorDriver), null);
+                case SyringePumpCommandType.SetDirection:
+                    if (expression.Type != typeof(bool)) { expression = Expression.Convert(expression, typeof(bool)); }
+                    return Expression.Call(typeof(SyringePumpCommand), nameof(ProcessSetDirection), null, expression);
                 case SyringePumpCommandType.StartProtocol:
                     return Expression.Call(typeof(SyringePumpCommand), nameof(ProcessStartProtocol), null);
                 case SyringePumpCommandType.StopProtocol:
@@ -124,6 +130,7 @@ namespace Bonsai.Harp.CF
 
         static HarpMessage ProcessEnableMotorDriver() => HarpCommand.WriteByte(address: 32, 1);
         static HarpMessage ProcessDisableMotorDriver() => HarpCommand.WriteByte(address: 32, 0);
+        static HarpMessage ProcessSetDirection(bool input) => HarpCommand.WriteByte(35, (byte) (input ? 1 : 0));
         static HarpMessage ProcessStartProtocol() => HarpCommand.WriteByte(address: 33, 1);
         static HarpMessage ProcessStopProtocol() => HarpCommand.WriteByte(address: 33, 0);
         static HarpMessage ProcessSetDigitalOutputs(byte input) => HarpCommand.WriteByte(address: 39, input);
