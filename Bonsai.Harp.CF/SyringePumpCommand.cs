@@ -11,8 +11,7 @@ namespace Bonsai.Harp.CF
 
         SetDirection,
 
-        StartProtocol,
-        StopProtocol,
+        EnableProtocol,
 
         SetDigitalOutputs,
         ClearDigitalOutputs,
@@ -44,7 +43,7 @@ namespace Bonsai.Harp.CF
     {
         [RefreshProperties(RefreshProperties.All)]
         [Description("Specifies which command to send to the Syringe Pump device.")]
-        public SyringePumpCommandType Type { get; set; } = SyringePumpCommandType.StartProtocol;
+        public SyringePumpCommandType Type { get; set; } = SyringePumpCommandType.EnableProtocol;
 
         public MotorMicrostep Mask { get; set; } = MotorMicrostep.Full;
 
@@ -58,10 +57,9 @@ namespace Bonsai.Harp.CF
                 {
                     case SyringePumpCommandType.SetMotorDriver: return "Enables/disables the motor on the Syringe Pump. Expects a boolean. 'true' enables the motor, 'false' disables the motor.";
                     case SyringePumpCommandType.SetDirection: return "Sets the direction. Expects a boolean. 'true' will set the direction to FORWARD, 'false' will set the direction to REVERSE.";
-                    case SyringePumpCommandType.StartProtocol: return "Start the configured protocol on the Syringe Pump";
-                    case SyringePumpCommandType.StopProtocol: return "Stop the running protocol on the Syringe Pump";
-                    case SyringePumpCommandType.SetDigitalOutputs: return "Set the state of digital output 0 using the input boolean value.";
-                    case SyringePumpCommandType.ClearDigitalOutputs: return "Set the state of digital output 1 using the input boolean value.";
+                    case SyringePumpCommandType.EnableProtocol: return "Enables/disables the previously defined protocol. Expects a boolean. 'true' will start the protocol, 'false' will stop the currently running protocol.";
+                    case SyringePumpCommandType.SetDigitalOutputs: return "Set the state of digital outputs. Expects a byte where 0 will set DO0 and 1 will set DO1.";
+                    case SyringePumpCommandType.ClearDigitalOutputs: return "Clear the state of digital outputs. Expects a byte where 0 will clear DO0 and 1 will clear DO1.";
                     case SyringePumpCommandType.MotorMicrostep: return "Set the motor microstep value.";
                     case SyringePumpCommandType.ProtocolNumberOfSteps: return "Set the number of steps to run in the protocol [1;65535]";
                     case SyringePumpCommandType.ProtocolStepsPeriod: return "Set the period in ms between each step on the protocol [1;65535]";
@@ -86,10 +84,9 @@ namespace Bonsai.Harp.CF
                 case SyringePumpCommandType.SetDirection:
                     if (expression.Type != typeof(bool)) { expression = Expression.Convert(expression, typeof(bool)); }
                     return Expression.Call(typeof(SyringePumpCommand), nameof(ProcessSetDirection), null, expression);
-                case SyringePumpCommandType.StartProtocol:
-                    return Expression.Call(typeof(SyringePumpCommand), nameof(ProcessStartProtocol), null);
-                case SyringePumpCommandType.StopProtocol:
-                    return Expression.Call(typeof(SyringePumpCommand), nameof(ProcessStopProtocol), null);
+                case SyringePumpCommandType.EnableProtocol:
+                    if (expression.Type != typeof(bool)) { expression = Expression.Convert(expression, typeof(bool)); }
+                    return Expression.Call(typeof(SyringePumpCommand), nameof(ProcessEnableProtocol), null, expression);
                 case SyringePumpCommandType.SetDigitalOutputs:
                     if (expression.Type != typeof(byte)) { expression = Expression.Convert(expression, typeof(byte)); }
                     return Expression.Call(typeof(SyringePumpCommand), nameof(ProcessSetDigitalOutputs), null, expression);
@@ -127,8 +124,7 @@ namespace Bonsai.Harp.CF
 
         static HarpMessage ProcessSetMotorDriver(bool input) => HarpCommand.WriteByte(32, (byte) (input ? 1 : 0));
         static HarpMessage ProcessSetDirection(bool input) => HarpCommand.WriteByte(35, (byte) (input ? 1 : 0));
-        static HarpMessage ProcessStartProtocol() => HarpCommand.WriteByte(address: 33, 1);
-        static HarpMessage ProcessStopProtocol() => HarpCommand.WriteByte(address: 33, 0);
+        static HarpMessage ProcessEnableProtocol(bool input) => HarpCommand.WriteByte(33, (byte) (input ? 1 : 0));
         static HarpMessage ProcessSetDigitalOutputs(byte input) => HarpCommand.WriteByte(address: 39, input);
         static HarpMessage ProcessClearDigitalOutputs(byte input) => HarpCommand.WriteByte(address: 40, input);
         static HarpMessage ProcessMotorMicrostep(MotorMicrostep input)
