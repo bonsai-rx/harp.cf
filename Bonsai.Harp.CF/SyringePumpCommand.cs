@@ -55,19 +55,19 @@ namespace Bonsai.Harp.CF
             {
                 switch(Type)
                 {
-                    case SyringePumpCommandType.SetMotorDriver: return "Enables/disables the motor on the Syringe Pump. Expects a boolean. 'true' enables the motor, 'false' disables the motor.";
-                    case SyringePumpCommandType.SetDirection: return "Sets the direction. Expects a boolean. 'true' will set the direction to FORWARD, 'false' will set the direction to REVERSE.";
-                    case SyringePumpCommandType.EnableProtocol: return "Enables/disables the previously defined protocol. Expects a boolean. 'true' will start the protocol, 'false' will stop the currently running protocol.";
-                    case SyringePumpCommandType.SetDigitalOutputs: return "Set the state of digital outputs. Expects a byte where 0 will set DO0 and 1 will set DO1.";
-                    case SyringePumpCommandType.ClearDigitalOutputs: return "Clear the state of digital outputs. Expects a byte where 0 will clear DO0 and 1 will clear DO1.";
-                    case SyringePumpCommandType.MotorMicrostep: return "Set the motor microstep value.";
-                    case SyringePumpCommandType.ProtocolNumberOfSteps: return "Set the number of steps to run in the protocol [1;65535]";
-                    case SyringePumpCommandType.ProtocolStepsPeriod: return "Set the period in ms between each step on the protocol [1;65535]";
-                    case SyringePumpCommandType.ProtocolFlowRate: return "Set the flow rate of the protocol [0.5;2000.0]";
-                    case SyringePumpCommandType.ProtocolVolume: return "Set the volume in uL of the protocol [0.5;2000.0]";
-                    case SyringePumpCommandType.ProtocolType: return "Set the type of the protocol. False for step-based and True to volume-based protocol.";
-                    case SyringePumpCommandType.CalibrationValue1: return "Set the calibration value 1 for protocol use.";
-                    case SyringePumpCommandType.CalibrationValue2: return "Set the calibration value 2 for protocol use.";
+                    case SyringePumpCommandType.SetMotorDriver: return "Enables/disables the motor on the Syringe Pump.\n\n[Input]\nExpects a boolean.\n\n'true' enables the motor\n'false' disables the motor.";
+                    case SyringePumpCommandType.SetDirection: return "Sets the direction.\n\n[Input]\nExpects a boolean.\n\n'true' will set the direction to FORWARD\n'false' will set the direction to REVERSE.";
+                    case SyringePumpCommandType.EnableProtocol: return "Enables/disables the previously defined protocol.\n\n[Input]\nExpects a boolean.\n\n'true' will start the protocol\n'false' will stop the currently running protocol.";
+                    case SyringePumpCommandType.SetDigitalOutputs: return "Set the state of digital outputs.\n\n[Input]\nExpects a byte\n\n0x01 will set DO0\n0x02 will set DO1.\n0x03 will set both DO0 and DO1.";
+                    case SyringePumpCommandType.ClearDigitalOutputs: return "Clear the state of digital outputs.\n\n[Input]\nExpects a byte\n\n0x01 will clear DO0\n0x02 will clear DO1.\n0x03 will clear both DO0 and DO1.";
+                    case SyringePumpCommandType.MotorMicrostep: return "Set the motor microstep value.\n\n[Input]\nExpects a byte or the Mask as used by the 'Create property source' option on the Node with the following possible values:\nFull = 0\nHalf = 1\nQuarter = 2\nEighth = 3\nSixteenth = 4";
+                    case SyringePumpCommandType.ProtocolNumberOfSteps: return "Set the number of steps to run in the protocol.\n\n[Input]\nExpects a UInt16 in the following range [1;65535]";
+                    case SyringePumpCommandType.ProtocolStepsPeriod: return "Set the period in ms between each step on the protocol.\n\n[Input]\nExpects a UInt16 in the following range [1;65535]";
+                    case SyringePumpCommandType.ProtocolFlowRate: return "Set the flow rate of the protocol.\n\n[Input]\nExpects a float in the following range [0.5;2000.0]";
+                    case SyringePumpCommandType.ProtocolVolume: return "Set the volume in uL of the protocol.\n\n[Input]\nExpects a float in the following range [0.5;2000.0]";
+                    case SyringePumpCommandType.ProtocolType: return "Set the type of the protocol.\n\n[Input]\nExpects a boolean.\n\n'true' for volume-based protocol\n'false' for step-based protocol.";
+                    case SyringePumpCommandType.CalibrationValue1: return "Set the calibration value 1 for protocol use.\n\n[Input]\nExpects a byte";
+                    case SyringePumpCommandType.CalibrationValue2: return "Set the calibration value 2 for protocol use.\n\n[Input]\nExpects a byte";
 
                     default: return null;
                 }
@@ -127,14 +127,7 @@ namespace Bonsai.Harp.CF
         static HarpMessage ProcessEnableProtocol(bool input) => HarpCommand.WriteByte(33, (byte) (input ? 1 : 0));
         static HarpMessage ProcessSetDigitalOutputs(byte input) => HarpCommand.WriteByte(address: 39, input);
         static HarpMessage ProcessClearDigitalOutputs(byte input) => HarpCommand.WriteByte(address: 40, input);
-        static HarpMessage ProcessMotorMicrostep(MotorMicrostep input)
-        {
-            bool exists = Enum.IsDefined(typeof(MotorMicrostep), input);
-            if (!exists)
-                throw new InvalidOperationException("Invalid Mask selection. Please select an appropriate value.");
-
-            return HarpCommand.WriteByte(address: 44, (byte)input);
-        }
+        static HarpMessage ProcessMotorMicrostep(MotorMicrostep input) => HarpCommand.WriteByte(address: 44, (byte)input);
 
         static HarpMessage ProcessProtocolNumberOfSteps(ushort input)
         {
