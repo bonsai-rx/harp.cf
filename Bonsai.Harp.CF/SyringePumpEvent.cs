@@ -46,7 +46,7 @@ namespace Bonsai.Harp.CF
                     case SyringePumpEventType.Direction: return "The state of the direction of motor's movement.";
                     case SyringePumpEventType.SwitchForward: return "The state of the forward switch.";
                     case SyringePumpEventType.SwitchReverse: return "The state of the reverse switch.";
-                    case SyringePumpEventType.Input: return "The state of the digital input 1.";
+                    case SyringePumpEventType.Input: return "The state of the digital input 0.";
                     default: return null;
                 }
             }
