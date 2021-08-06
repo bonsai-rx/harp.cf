@@ -61,8 +61,8 @@ namespace Bonsai.Harp.CF
                     case SyringePumpCommandType.MotorMicrostep: return "Set the motor microstep value.\n\n[Input]\nExpects a byte with the following possible values:\nFull = 0\nHalf = 1\nQuarter = 2\nEighth = 3\nSixteenth = 4";
                     case SyringePumpCommandType.ProtocolNumberOfSteps: return "Set the number of steps to run in the protocol.\n\n[Input]\nExpects a UInt16 in the following range [1;65535]";
                     case SyringePumpCommandType.ProtocolStepsPeriod: return "Set the period in ms between each step on the protocol.\n\n[Input]\nExpects a UInt16 in the following range [1;65535]";
-                    case SyringePumpCommandType.ProtocolFlowRate: return "Set the flow rate of the protocol.\n\n[Input]\nExpects a float in the following range [0.5;2000.0]";
-                    case SyringePumpCommandType.ProtocolVolume: return "Set the volume in uL of the protocol.\n\n[Input]\nExpects a float in the following range [0.5;2000.0]";
+                    case SyringePumpCommandType.ProtocolFlowRate: return "Set the flow rate (in uL/s) of the protocol.\n\n[Input]\nExpects a float greater than 0.";
+                    case SyringePumpCommandType.ProtocolVolume: return "Set the volume (in uL) of the protocol.\n\n[Input]\nExpects a float greater than 0.";
                     case SyringePumpCommandType.ProtocolType: return "Set the type of the protocol.\n\n[Input]\nExpects a boolean.\n\n'true' for volume-based protocol\n'false' for step-based protocol.";
                     case SyringePumpCommandType.CalibrationValue1: return "Set the calibration value 1 for protocol use.\n\n[Input]\nExpects a byte";
                     case SyringePumpCommandType.CalibrationValue2: return "Set the calibration value 2 for protocol use.\n\n[Input]\nExpects a byte";
@@ -136,31 +136,31 @@ namespace Bonsai.Harp.CF
         static HarpMessage ProcessProtocolNumberOfSteps(ushort input)
         {
             if (input <= 0)
-                throw new InvalidOperationException("Invalid number of steps. Must be above 0.");
+                throw new InvalidOperationException("Invalid number of steps. Must be greater than 0.");
 
             return HarpCommand.WriteUInt16(address: 45, input);
         }
 
         static HarpMessage ProcessProtocolStepsPeriod(ushort input)
         {
-            if (input <= 0)
-                throw new InvalidOperationException("Invalid steps period. Must be above 0.");
+            if (input < 1)
+                throw new InvalidOperationException("Invalid steps period. Must be greater or equal than 1.");
 
             return HarpCommand.WriteUInt16(address: 47, input);
         }
 
         static HarpMessage ProcessProtocolFlowRate(float input)
         {
-            if (input < 0.5f || input > 2000.0f)
-                throw new InvalidOperationException("Invalid flow rate value. Must be greater or equal to 0.5 and less or equal than 2000.");
+            if (input <= 0)
+                throw new InvalidOperationException("Invalid flow rate value. Must be greater than 0.");
 
             return HarpCommand.WriteSingle(address: 46, input);
         }
 
         static HarpMessage ProcessProtocolVolume(float input)
         {
-            if (input < 0.5f || input > 2000.0f)
-                throw new InvalidOperationException("Invalid volume value. Must be greater or equal to 0.5 and less or equal than 2000.");
+            if (input <= 0)
+                throw new InvalidOperationException("Invalid volume value. Must be greater than 0.");
 
             return HarpCommand.WriteSingle(address: 48, input);
         }
