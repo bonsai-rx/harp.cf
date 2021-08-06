@@ -23,7 +23,10 @@ namespace Bonsai.Harp.CF
         SwitchReverse,
 
         /* Event: INPUT_STATE */
-        Input
+        Input,
+
+        /* Event: PROTOCOL_STATE */
+        Protocol
     }
 
     [TypeDescriptionProvider(typeof(DeviceTypeDescriptionProvider<SyringePumpEvent>))]
@@ -47,6 +50,7 @@ namespace Bonsai.Harp.CF
                     case SyringePumpEventType.SwitchForward: return "The state of the forward switch.";
                     case SyringePumpEventType.SwitchReverse: return "The state of the reverse switch.";
                     case SyringePumpEventType.Input: return "The state of the digital input 0.";
+                    case SyringePumpEventType.Protocol: return "The running state of the protocol.";
                     default: return null;
                 }
             }
@@ -68,6 +72,8 @@ namespace Bonsai.Harp.CF
                     return Expression.Call(typeof(SyringePumpEvent), nameof(ProcessSwitchReverse), null, expression);
                 case SyringePumpEventType.Input:
                     return Expression.Call(typeof(SyringePumpEvent), nameof(ProcessInput), null, expression);
+                case SyringePumpEventType.Protocol:
+                    return Expression.Call(typeof(SyringePumpEvent), nameof(ProcessProtocol), null, expression);
                 default:
                     break;
             }
@@ -98,6 +104,11 @@ namespace Bonsai.Harp.CF
         static IObservable<bool> ProcessInput(IObservable<HarpMessage> source)
         {
             return source.Event(address: 38).Select(input => input.GetPayloadByte() != 0);
+        }
+
+        static IObservable<bool> ProcessProtocol(IObservable<HarpMessage> source)
+        {
+            return source.Event(address: 54).Select(input => input.GetPayloadByte() != 0);
         }
     }
 }
