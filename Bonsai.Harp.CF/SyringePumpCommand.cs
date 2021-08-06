@@ -45,8 +45,6 @@ namespace Bonsai.Harp.CF
         [Description("Specifies which command to send to the Syringe Pump device.")]
         public SyringePumpCommandType Type { get; set; } = SyringePumpCommandType.EnableProtocol;
 
-        public MotorMicrostep Mask { get; set; } = MotorMicrostep.Full;
-
         string INamedElement.Name => $"SyringePump.{Type}";
 
         string Description
@@ -60,7 +58,7 @@ namespace Bonsai.Harp.CF
                     case SyringePumpCommandType.EnableProtocol: return "Enables/disables the previously defined protocol.\n\n[Input]\nExpects a boolean.\n\n'true' will start the protocol\n'false' will stop the currently running protocol.";
                     case SyringePumpCommandType.SetDigitalOutputs: return "Set the state of digital outputs.\n\n[Input]\nExpects a byte\n\n0x01 will set DO0\n0x02 will set DO1.\n0x03 will set both DO0 and DO1.";
                     case SyringePumpCommandType.ClearDigitalOutputs: return "Clear the state of digital outputs.\n\n[Input]\nExpects a byte\n\n0x01 will clear DO0\n0x02 will clear DO1.\n0x03 will clear both DO0 and DO1.";
-                    case SyringePumpCommandType.MotorMicrostep: return "Set the motor microstep value.\n\n[Input]\nExpects a byte or the Mask as used by the 'Create property source' option on the Node with the following possible values:\nFull = 0\nHalf = 1\nQuarter = 2\nEighth = 3\nSixteenth = 4";
+                    case SyringePumpCommandType.MotorMicrostep: return "Set the motor microstep value.\n\n[Input]\nExpects a byte with the following possible values:\nFull = 0\nHalf = 1\nQuarter = 2\nEighth = 3\nSixteenth = 4";
                     case SyringePumpCommandType.ProtocolNumberOfSteps: return "Set the number of steps to run in the protocol.\n\n[Input]\nExpects a UInt16 in the following range [1;65535]";
                     case SyringePumpCommandType.ProtocolStepsPeriod: return "Set the period in ms between each step on the protocol.\n\n[Input]\nExpects a UInt16 in the following range [1;65535]";
                     case SyringePumpCommandType.ProtocolFlowRate: return "Set the flow rate of the protocol.\n\n[Input]\nExpects a float in the following range [0.5;2000.0]";
@@ -127,7 +125,13 @@ namespace Bonsai.Harp.CF
         static HarpMessage ProcessEnableProtocol(bool input) => HarpCommand.WriteByte(33, (byte) (input ? 1 : 0));
         static HarpMessage ProcessSetDigitalOutputs(byte input) => HarpCommand.WriteByte(address: 39, input);
         static HarpMessage ProcessClearDigitalOutputs(byte input) => HarpCommand.WriteByte(address: 40, input);
-        static HarpMessage ProcessMotorMicrostep(MotorMicrostep input) => HarpCommand.WriteByte(address: 44, (byte)input);
+        static HarpMessage ProcessMotorMicrostep(MotorMicrostep input)
+        {
+            if(!Enum.IsDefined(typeof(MotorMicrostep), input))
+                throw new InvalidOperationException("Invalid MotorMicrostep value. Valid values are: \nFull = 0\nHalf = 1\nQuarter = 2\nEighth = 3\nSixteenth = 4.");
+
+            return HarpCommand.WriteByte(address: 44, (byte) input);
+        }
 
         static HarpMessage ProcessProtocolNumberOfSteps(ushort input)
         {
