@@ -120,9 +120,9 @@ namespace Bonsai.Harp.CF
             }
         }
 
-        static HarpMessage ProcessSetMotorDriver(bool input) => HarpCommand.WriteByte(32, (byte) (input ? 1 : 0));
-        static HarpMessage ProcessSetDirection(bool input) => HarpCommand.WriteByte(35, (byte) (input ? 1 : 0));
-        static HarpMessage ProcessEnableProtocol(bool input) => HarpCommand.WriteByte(33, (byte) (input ? 1 : 0));
+        static HarpMessage ProcessSetMotorDriver(bool input) => HarpCommand.WriteByte(address: 32, (byte)(input ? 1 : 0));
+        static HarpMessage ProcessSetDirection(bool input) => HarpCommand.WriteByte(address: 35, (byte)(input ? 1 : 0));
+        static HarpMessage ProcessEnableProtocol(bool input) => HarpCommand.WriteByte(address: 33, (byte)(input ? 1 : 0));
         static HarpMessage ProcessSetDigitalOutputs(byte input) => HarpCommand.WriteByte(address: 39, input);
         static HarpMessage ProcessClearDigitalOutputs(byte input) => HarpCommand.WriteByte(address: 40, input);
         static HarpMessage ProcessMotorMicrostep(MotorMicrostep input)
@@ -143,8 +143,8 @@ namespace Bonsai.Harp.CF
 
         static HarpMessage ProcessProtocolStepsPeriod(ushort input)
         {
-            if (input < 1)
-                throw new InvalidOperationException("Invalid steps period. Must be greater or equal than 1.");
+            if (input <= 0)
+                throw new InvalidOperationException("Invalid steps period. Must be greater than 0.");
 
             return HarpCommand.WriteUInt16(address: 47, input);
         }
