@@ -23,6 +23,7 @@ namespace Bonsai.Harp.CF
         ProtocolFlowRate,
         ProtocolVolume,
         ProtocolType,
+        ProtocolDirection,
 
         CalibrationValue1,
         CalibrationValue2
@@ -64,6 +65,7 @@ namespace Bonsai.Harp.CF
                     case SyringePumpCommandType.ProtocolFlowRate: return "Set the flow rate (in uL/s) of the protocol.\n\n[Input]\nExpects a float greater than 0.";
                     case SyringePumpCommandType.ProtocolVolume: return "Set the volume (in uL) of the protocol.\n\n[Input]\nExpects a float greater than 0.";
                     case SyringePumpCommandType.ProtocolType: return "Set the type of the protocol.\n\n[Input]\nExpects a boolean.\n\n'true' for volume-based protocol\n'false' for step-based protocol.";
+                    case SyringePumpCommandType.ProtocolDirection: return "Sets the direction that the protocol will run.\n\n[Input]\nExpects a boolean.\n\n'true' will set the direction to FORWARD\n'false' will set the direction to REVERSE.";
                     case SyringePumpCommandType.CalibrationValue1: return "Set the calibration value 1 for protocol use.\n\n[Input]\nExpects a byte";
                     case SyringePumpCommandType.CalibrationValue2: return "Set the calibration value 2 for protocol use.\n\n[Input]\nExpects a byte";
 
@@ -109,6 +111,9 @@ namespace Bonsai.Harp.CF
                 case SyringePumpCommandType.ProtocolType:
                     if (expression.Type != typeof(bool)) { expression = Expression.Convert(expression, typeof(bool)); }
                     return Expression.Call(typeof(SyringePumpCommand), nameof(ProcessProtocolType), null, expression);
+                case SyringePumpCommandType.ProtocolDirection:
+                    if (expression.Type != typeof(bool)) { expression = Expression.Convert(expression, typeof(bool)); }
+                    return Expression.Call(typeof(SyringePumpCommand), nameof(ProcessProtocolDirection), null, expression);
                 case SyringePumpCommandType.CalibrationValue1:
                     if (expression.Type != typeof(byte)) { expression = Expression.Convert(expression, typeof(byte)); }
                     return Expression.Call(typeof(SyringePumpCommand), nameof(ProcessCalibrationValue1), null, expression);
@@ -166,6 +171,7 @@ namespace Bonsai.Harp.CF
         }
 
         static HarpMessage ProcessProtocolType(bool input) => HarpCommand.WriteByte(address: 49, (byte)(input? 1: 0));
+        static HarpMessage ProcessProtocolDirection(bool input) => HarpCommand.WriteByte(address: 55, (byte)(input? 1: 0));
         static HarpMessage ProcessCalibrationValue1(byte input) => HarpCommand.WriteByte(address: 50, input);
         static HarpMessage ProcessCalibrationValue2(byte input) => HarpCommand.WriteByte(address: 51, input);
     }
