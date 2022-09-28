@@ -47,6 +47,8 @@ namespace Bonsai.Harp.CF
                     case BehaviorCommandType.RegisterToggleOutputs: return "Toggles the state of the outputs specified in the input 16-bit mask.";
                     case BehaviorCommandType.RegisterStartPwm: return "Starts the PWM at all outputs specified in the input 16-bit mask.";
                     case BehaviorCommandType.RegisterStopPwm: return "Stops the PWM at all outputs specified in the input 16-bit mask.";
+                    case BehaviorCommandType.MimicInfraRedBeam: return "Configure the selected Port to report the infrared-beam state to the specified digital output.";
+                    case BehaviorCommandType.MimicValve: return "Configure the selected Port to report the valve state to the specified digital output.";
                     default: return null;
                 }
             }
@@ -145,6 +147,13 @@ namespace Bonsai.Harp.CF
                     if (expression.Type != typeof(byte[])) { expression = Expression.Convert(expression, typeof(byte[])); }
                     return Expression.Call(typeof(BehaviorCommand), nameof(ProcessColorsRgbs), null, expression);
 
+                /************************************************************************/
+                /* Mimic                                                                 */
+                /************************************************************************/
+                case BehaviorCommandType.MimicInfraRedBeam:
+                    return Expression.Call(typeof(BehaviorCommand), nameof(ProcessMimicInfraRedBeam), null, GetBitMask());
+                case BehaviorCommandType.MimicValve:
+                    return Expression.Call(typeof(BehaviorCommand), nameof(ProcessMimicValve), null, GetBitMask());
                 default:
                     break;
             }
@@ -392,6 +401,46 @@ namespace Bonsai.Harp.CF
                     throw new InvalidOperationException("Invalid Mask selection. Only Port2 can be selected.");
             }
         }
+
+        static byte ProcessMimicOutput(uint bMask)
+        {
+            const uint InputMask = (uint)(BehaviorPorts.Port0 | BehaviorPorts.Port1 | BehaviorPorts.Port2);
+            switch (bMask & ~InputMask)
+            {
+                case 0: return 0x00;
+                case (uint)BehaviorPorts.Digital0: return 0x04;
+                case (uint)BehaviorPorts.Digital1: return 0x05;
+                case (uint)BehaviorPorts.Digital2: return 0x06;
+                case (uint)BehaviorPorts.Digital3: return 0x07;
+                default: throw new InvalidOperationException("Invalid Mask selection. Only Digital0 or Digital1 or Digital2 or Digital3 can be individually selected.");
+            }
+        }
+
+        static HarpMessage ProcessMimicInfraRedBeam(uint bMask)
+        {
+            var output = ProcessMimicOutput(bMask);
+            const uint InputMask = (uint)(BehaviorPorts.Port0 | BehaviorPorts.Port1 | BehaviorPorts.Port2);
+            switch (bMask & InputMask)
+            {
+                case (uint)BehaviorPorts.Port0: return HarpCommand.WriteByte(address: 111, output);
+                case (uint)BehaviorPorts.Port1: return HarpCommand.WriteByte(address: 112, output);
+                case (uint)BehaviorPorts.Port2: return HarpCommand.WriteByte(address: 113, output);
+                default: throw new InvalidOperationException("Invalid Mask selection. Only Port0 or Port1 or Port2 can be individually configured to mimic.");
+            }
+        }
+
+        static HarpMessage ProcessMimicValve(uint bMask)
+        {
+            var output = ProcessMimicOutput(bMask);
+            const uint InputMask = (uint)(BehaviorPorts.Port0 | BehaviorPorts.Port1 | BehaviorPorts.Port2);
+            switch (bMask & InputMask)
+            {
+                case (uint)BehaviorPorts.Port0: return HarpCommand.WriteByte(address: 117, output);
+                case (uint)BehaviorPorts.Port1: return HarpCommand.WriteByte(address: 118, output);
+                case (uint)BehaviorPorts.Port2: return HarpCommand.WriteByte(address: 119, output);
+                default: throw new InvalidOperationException("Invalid Mask selection. Only Port0 or Port1 or Port2 can be individually configured to mimic.");
+            }
+        }
     }
 
     //          0  1     2     3  4     5     6    7     8     9    10   11   12   13   14 15
@@ -449,6 +498,9 @@ namespace Bonsai.Harp.CF
         RegisterClearOutputs,
         RegisterToggleOutputs,
         RegisterStartPwm,
-        RegisterStopPwm
+        RegisterStopPwm,
+
+        MimicInfraRedBeam,
+        MimicValve
     }
 }
