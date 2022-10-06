@@ -7,8 +7,11 @@
     <PackageLicenseUrl>https://github.com/bonsai-rx/harp.cf/blob/main/LICENSE</PackageLicenseUrl>
     <PackageIconUrl>https://github.com/bonsai-rx/harp/raw/main/Resources/Harp.png</PackageIconUrl>
     <IncludeSymbols Condition="'$(Configuration)'=='Release'">true</IncludeSymbols>
+    <SymbolPackageFormat Condition="'$(Configuration)'=='Release'">snupkg</SymbolPackageFormat>
     <GeneratePackageOnBuild Condition="'$(Configuration)'=='Release'">true</GeneratePackageOnBuild>
     <PackageOutputPath>..\bin\$(Configuration)</PackageOutputPath>
+    <RepositoryUrl>https://github.com/bonsai-rx/harp.cf.git</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
     <VersionSuffix>preview2</VersionSuffix>
     <Features>strict</Features>
   </PropertyGroup>
