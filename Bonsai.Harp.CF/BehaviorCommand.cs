@@ -37,6 +37,7 @@ namespace Bonsai.Harp.CF
                     case BehaviorCommandType.ColorsRgbs: return "Sets the color of all the LEDs simultaneously. The input is a positive integer array (R,G,B,R,G,B).";
                     case BehaviorCommandType.StartCamera: return "Start triggering frame acquisition on the selected digital output.";
                     case BehaviorCommandType.StopCamera: return "Stop triggering frame acquisition on the selected digital output.";
+                    case BehaviorCommandType.CameraFrequency: return "Sets the frequency of the Camera trigger signal on the selected output, in Hertz (1:600).";
                     case BehaviorCommandType.EnableServo: return "Enable servo motor control on the selected output.";
                     case BehaviorCommandType.DisableServo: return "Disable servo motor control on the selected output.";
                     case BehaviorCommandType.ServoPosition: return "Sets the servo motor position on the selected output.";
@@ -114,6 +115,9 @@ namespace Bonsai.Harp.CF
                     return Expression.Call(typeof(BehaviorCommand), nameof(ProcessStartCamera), null, GetBitMask());
                 case BehaviorCommandType.StopCamera:
                     return Expression.Call(typeof(BehaviorCommand), nameof(ProcessStopCamera), null, GetBitMask());
+                case BehaviorCommandType.CameraFrequency:
+                    if (expression.Type != typeof(ushort)) { expression = Expression.Convert(expression, typeof(ushort)); }
+                    return Expression.Call(typeof(BehaviorCommand), nameof(ProcessCameraFrequency), null, expression, GetBitMask());
 
                 case BehaviorCommandType.EnableServo:
                     return Expression.Call(typeof(BehaviorCommand), nameof(ProcessEnableServo), null, GetBitMask());
@@ -353,6 +357,17 @@ namespace Bonsai.Harp.CF
             return HarpCommand.WriteByte(address: 79, (byte)(GetRegOutputs(bMask) >> 10));
         }
 
+        static HarpMessage ProcessCameraFrequency(ushort input, uint bMask)
+        {
+            switch (bMask)
+            {
+                case (uint)BehaviorPorts.Digital0: return HarpCommand.WriteUInt16(address: 93, input);
+                case (uint)BehaviorPorts.Digital1: return HarpCommand.WriteUInt16(address: 95, input);
+                default:
+                    throw new InvalidOperationException("Invalid Mask selection. Only Digital0 or Digital1 can be individually selected.");
+            }
+        }
+
         static HarpMessage ProcessEnableServo(uint bMask)
         {
             if ((GetRegOutputs(bMask) & ~((1 << 12) | (1 << 13))) > 0)
@@ -488,6 +503,8 @@ namespace Bonsai.Harp.CF
 
         StartCamera,
         StopCamera,
+        CameraFrequency,
+
         EnableServo,
         DisableServo,
         ServoPosition,
